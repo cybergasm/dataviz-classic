@@ -40,8 +40,11 @@ require.config({
 
 });
 
-require(['data_module', 'jquery-ui'], function(dataModule, $) {
+require(['jquery-ui', 'data_module', 'map_comparison_view'], 
+    function($, dataModule, mapComparisonViewFactory) {
   dataModule.loadData(function() {
-    $("body").append("<h1>" + dataModule.polisData[0] + "</h1>");
+    mapComparisonView = mapComparisonViewFactory();
+    // Add the comparison view to the appropriate container.
+    $("#main_view").html(mapComparisonView.el);
   });
 });

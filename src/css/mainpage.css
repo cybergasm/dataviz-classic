@@ -33,7 +33,11 @@ svg {
   cursor: move;
 }
 
-#main {
+#map-config-dialog {
+  width: 1280px;
+  height: 700px;
+}
+/*#main {
   border:2px solid gray;
   margin:0 auto;
   padding:0;
@@ -136,7 +140,7 @@ svg {
 
 .checkboxForm {
   display:block;
-}
+}*/
 
 /*.binaryForm {
   display: -moz-inline-box;
@@ -147,7 +151,7 @@ svg {
   font-family:arial;
   font-size:small;
 }*/
-
+/*
 .placeForm {
   margin-left: 0px;
 }
@@ -160,4 +164,4 @@ label {
   vertical-align: top;
   font-family:arial;
   font-size:small;
-}
+}*/
