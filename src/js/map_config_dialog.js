@@ -9,7 +9,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget'],
     initialize: function(options) {
       // This allows the enumerated methods to refer to this object
       _.bindAll(this, 'render', 'openDialog');
-      this.el = options.parentElem;
+      this.el = $(options.parentElem);
       this.render();
     },
 
