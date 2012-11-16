@@ -1,0 +1,93 @@
+define(['backbone', 'jquery-ui', 'd3', 'data_module'], 
+    function(Backbone, $, d3, dataModule) {
+  var mapWidget = Backbone.View.extend( {
+
+    mapId: "map",
+
+    initialize: function(options) {
+      _.bindAll(this, 'render');
+      
+      this.el = $(options.parentElem);
+    },
+
+    render: function() {
+      $(this.el).append("<div id=\"" + this.mapId +"\"></div>");
+
+      // Save a reference
+      var that = this;
+
+      var rankRamp = d3.scale.linear().domain([0,.005]).range([1,10]).clamp(true);
+  
+      var projection = d3.geo.azimuthal()
+        .scale(2500)
+        .origin([22.8,38.6])
+        .mode("orthographic")
+        .translate([640, 400]);
+
+      var circle = d3.geo.greatCircle()
+        .origin(projection.origin());
+
+      var path = d3.geo.path()
+        .projection(projection);
+
+      var mapsvg = d3.select("#" + this.mapId).append("svg:svg")
+        .attr("width", 1280)
+        .attr("height", 800);
+
+      var map = mapsvg.append("svg:g").attr("class", "map")
+        .attr("transform", "translate(2,3)");
+
+      var JSON_PATH = "../../data/romeland.json";
+
+      d3.json(JSON_PATH, function(collection) {
+        embossed = map.selectAll("path.countries")
+          .data(collection.features)
+          .enter().append("svg:path")
+          .attr("d", clip)
+          .attr("class", "countries")
+          .style("fill", "black")
+          .style("stroke", "#638a8a")
+          .style("stroke-width", 4);
+
+        sites = map.selectAll("g.sites") 
+          .data(dataModule.polisData)
+          .enter()
+          .append("svg:g")
+          .attr("class", "foreground")
+          .attr("transform", function(d) {return "translate(" + projection([d.  xcoord,d.ycoord]) + ")";})
+          .style("cursor", "pointer")
+          .on("click", siteClick);
+
+        sites.append("svg:circle")      
+          .attr('r', 5)
+          .attr("class", "sites")
+          .style("fill", "red")
+          .style("stroke", "grey")
+          .style("opacity", 0)
+          .transition()
+          .delay(300)
+          .duration(1000)
+          .style("opacity", .85);
+        });
+
+      function clip(d) {
+        return path(circle.clip(d));
+      }
+
+      function siteClick(clickedPoint) {
+        //var headers = d3.keys(sitesdata[0]);
+        //var returnThis = function(d, i){ return clickedPoint[headers[i]];};
+        //placeBoxDataFields.text(returnThis);
+
+        projection.origin([clickedPoint.xcoord, clickedPoint.ycoord]);
+        projection.scale(4500);
+        sites.transition().duration(50).attr("transform", function(d) { return "translate(" + projection([d.xcoord, d.ycoord]) + ")"; });
+        embossed.transition().duration(50).attr("d", clip);
+      }
+    }
+});
+  
+  return function(parent_) {
+    return new mapWidget({parentElem:parent_});
+  }
+});
