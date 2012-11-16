@@ -23,6 +23,7 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog'],
 
     newMap: function() {
       // Creates a new dialog with an associated model
+      // TODO Ensure any dialogs already open are cleared
       this.mapConfigDialog = mapConfigDialogFactory(this.el);
 
       this.mapConfigDialog.openDialog();
