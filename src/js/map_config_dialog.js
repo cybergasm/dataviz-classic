@@ -1,7 +1,11 @@
 // This module sets up a dialog view with the different configuration options 
 // associated to creating a map-view over our data.
-define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 'checkboxes_widget', 'map_widget'], 
-    function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, checkboxesWidgetFactory, mapWidgetFactory) {
+define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 
+  'checkboxes_widget', 'map_widget', 'data_module', 'map_config_model'], 
+    function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, 
+      checkboxesWidgetFactory, mapWidgetFactory, dataModule, 
+      mapConfigModelFactory) {
+  
   var dialogView = Backbone.View.extend( {
     
     elId: "map-config-dialog",
@@ -10,6 +14,13 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       // This allows the enumerated methods to refer to this object
       _.bindAll(this, 'render', 'openDialog');
       this.el = $(options.parentElem);
+
+      // Creates a model for this configuration
+      this.model = mapConfigModelFactory();
+      
+      // Makes the data model listen to changes to our configuration
+      dataModule.listenToMapConfig(this.model);
+
       this.render();
     },
 
@@ -18,14 +29,14 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       $(this.el).append("<div id=\"" + this.elId + "\"></div>");
       $("#" + this.elId, this.el).dialog({
         autoOpen: false,
-        modal: true,
         show: "blind",
         hide: "blind",
         width: 1280,
         height: "auto",
       });
 
-      parallelCoordWidget = parallelCoordWidgetFactory("#" + this.elId);
+      parallelCoordWidget = parallelCoordWidgetFactory(
+        "#" + this.elId, this.model);
       parallelCoordWidget.render();
 
       mapWidget = mapWidgetFactory("#" + this.elId);

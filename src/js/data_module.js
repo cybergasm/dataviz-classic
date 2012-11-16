@@ -2,13 +2,13 @@
 // pre-set map of data-name to data-path. Data is loaded by calling the 
 // 'loadData' function with a callback. This callback is invoked after all the
 // specified data has been loaded. 
-define(['underscore', 'd3'], function (_, d3) { 
+define(['backbone', 'd3'], function (Backbone, d3) { 
   
   var PATHS = {
     "polisData" : "../../data/polis_10_12.csv",
   };
 
-  return {
+  var dataModel = Backbone.Model.extend({
     loadData: function(callback) {
       pathsToLoad = _.size(PATHS);
       
@@ -50,6 +50,81 @@ define(['underscore', 'd3'], function (_, d3) {
           }
         });  
       }
-    },  
-  }
+    },
+
+    // Given a map configuration model, sets itself up to listen to changes
+    // to this model in order to filter data in response to new state.
+    listenToMapConfig: function(mapConfigModel) {
+
+      var that = this;
+
+      // For a given site toCheck that is passed in as a parameter, returns 
+      // true if the site should be visible and false if the site should be 
+      // invisible. 
+      function placeIsVisible(toCheck) {
+
+        //Check parallel coordinate fields
+        for(var i = 0; i < that.parallelFieldNames.length; i++) {
+          var pField = that.parallelFieldNames[i];
+          var curField = mapConfigModel.get("parallelConfig").get(pField);
+          fieldMax = curField.max;
+          fieldMin = curField.min;
+          if(toCheck[pField] < fieldMin || toCheck[pField] > fieldMax) {
+            return false;
+          }
+        }
+
+        //Check binary fields
+        for(var i = 0; i < that.binaryFieldNames.length; i++) {
+          var bField = that.binaryFieldNames[i];
+          var curBinaryField = mapConfigModel.get("binaryConfig").get(bField);
+          noFieldSetting = curBinaryField[0];
+          yesFieldSetting = curBinaryField[1];
+          toCheckValue = toCheck[bField];
+
+          if(yesFieldSetting == true) {
+            // 0 is off and 1 is on, return false if toCheckValue == 0
+            // otherwise 0 is on and 1 is on, do not need to filter on this 
+            // field
+            if(noFieldSetting == false) {
+              if(toCheckValue == 0) {
+                return false;
+              } 
+            }
+          } else {
+            // both 0 and 1 are off, return false if toCheckValue == 1
+            if(noFieldSetting == false) {
+              return false;
+            }
+            // 0 is on and 1 is off, return false if toCheckValue == 1
+            if(toCheckValue == 1) {
+              return false;
+            } 
+          }
+        }
+        return true;
+      }
+
+      // When we've heard a change, go through data and see which cities are
+      // visible under current constraints. Then set them to the currently 
+      // visible variable.
+      function filterData() {
+        var visiblePlaces = {};
+        for (var i = 0; i < that.polisData.length; i++) {
+          if (placeIsVisible (that.polisData[i])) {
+            visiblePlaces[that.polisData[i].name] = that.polisData[i];
+          }
+        }
+        that.set("visiblePlaces", visiblePlaces);
+      }
+
+      // Register to listen to updates of parallel fields
+      for (var i = 0; i < this.parallelFieldNames.length; i++) {
+        mapConfigModel.get("parallelConfig").bind(
+          "change:" + this.parallelFieldNames[i], filterData);
+      }
+    }  
+  });
+
+  return new dataModel();
 });

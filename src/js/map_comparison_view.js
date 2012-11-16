@@ -10,7 +10,6 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog'],
 
     initialize: function(options) {
       _.bindAll(this, 'render', 'newMap');
-      this.mapConfigDialog = mapConfigDialogFactory(this.el);
       this.render();
     },
 
@@ -23,6 +22,9 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog'],
     },
 
     newMap: function() {
+      // Creates a new dialog with an associated model
+      this.mapConfigDialog = mapConfigDialogFactory(this.el);
+
       this.mapConfigDialog.openDialog();
     }    
   }); 
