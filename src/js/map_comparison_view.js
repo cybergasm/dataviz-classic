@@ -1,6 +1,5 @@
 // This module is the view of multiple maps side-by-side. It also holds the
 // button for defining a new map.
-
 define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog'], 
     function($, Backbone, dataModule, mapConfigDialogFactory) {
   var mapComparisonView = Backbone.View.extend( {

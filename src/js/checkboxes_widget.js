@@ -1,5 +1,6 @@
 define(['backbone', 'jquery-ui', 'd3', 'data_module'], 
     function(Backbone, $, d3, dataModule) {
+      
   var parallelCoordWidget = Backbone.View.extend( {
 
     formId: "checkboxes",
@@ -33,7 +34,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .attr("values", checkboxControlPanel[returnThis]);
 
       var labels = form.selectAll("p").append("label")
-       .text(returnThis)
+        .text(returnThis)
         .attr("for", returnThis);
 
       // For each field, adds all of the checkbox values that correspond to the option
@@ -55,8 +56,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           .text(returnThis)
           .attr("for", returnThis);   
       }
+    } 
   });
-
   return function(parent_) {
     return new parallelCoordWidget({parentElem:parent_});
   }
