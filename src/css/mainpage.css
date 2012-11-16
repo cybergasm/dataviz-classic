@@ -142,7 +142,7 @@ svg {
   display:block;
 }*/
 
-/*.binaryForm {
+.binaryForm {
   display: -moz-inline-box;
   display: inline-block;
   width: 150px;
@@ -150,13 +150,13 @@ svg {
   vertical-align: top;
   font-family:arial;
   font-size:small;
-}*/
+}
 /*
 .placeForm {
   margin-left: 0px;
 }
-
-label {
+*/
+/*label {
   display: -moz-inline-box;
   display: inline-block;
   width: 150px;
@@ -164,4 +164,5 @@ label {
   vertical-align: top;
   font-family:arial;
   font-size:small;
-}*/
+}
+*/

@@ -26,8 +26,13 @@ define(['underscore', 'd3'], function (_, d3) {
         // Generate array of headers that correspond to data in parallel form
         that.parallelFieldNames = headers.filter(function(d) { 
           return that.polisData[0][d] == "parallel";});
-       
-        that.polisData.splice(0,2)  
+        that.binaryFieldNames = headers.filter(function(d) {
+          return that.polisData[0][d] == "binary";});
+        that.checkboxFieldNames = headers.filter(function(d) {
+          return that.polisData[0][d] == "checkbox";});
+
+        // Gets rid of the header rows
+        that.polisData.splice(0,2);
       }
 
       for (var path in PATHS) {
