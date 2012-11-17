@@ -27,7 +27,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       var that = this;
       
       function updateViewWithSelected() {
-        
         that.foreground.style("display", function(d, i) { 
           // Check if the currently visible places have an entry for this data
           // point

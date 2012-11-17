@@ -9,8 +9,19 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       
       this.el = $(options.parentElem);
 
+      this.dataModule = dataModule;
+
+      var that = this;  
+
+      function updateVisiblePlaces() {
+        console.log("In map update")
+        that.sites.style("display", function(d, i) {
+          return (dataModule.get("visiblePlaces")[d['name']] ? null : "none");
+        });
+      }
+
       // Make ourselvs a listener to when the visible places change.
-      dataModule.bind("change:visiblePlaces", this.updateViewWithSelected);
+      dataModule.bind("change:visiblePlaces", updateVisiblePlaces);
     },
 
     render: function() {
@@ -55,16 +66,19 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           .style("stroke", "#638a8a")
           .style("stroke-width", 4);
 
-        sites = map.selectAll("g.sites") 
+        // Save sites so we can chage what is visible later
+        that.sites = map.selectAll("g.sites") 
           .data(dataModule.polisData)
           .enter()
           .append("svg:g")
           .attr("class", "foreground")
-          .attr("transform", function(d) {return "translate(" + projection([d.  xcoord,d.ycoord]) + ")";})
+          .attr("transform", function(d) {
+            return "translate(" + projection([d.  xcoord,d.ycoord]) + ")";
+          })
           .style("cursor", "pointer")
           .on("click", siteClick);
 
-        sites.append("svg:circle")      
+        that.sites.append("svg:circle")      
           .attr('r', 5)
           .attr("class", "sites")
           .style("fill", "red")
@@ -88,7 +102,10 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
         projection.origin([clickedPoint.xcoord, clickedPoint.ycoord]);
         projection.scale(4500);
-        sites.transition().delay(100).duration(500).attr("transform", function(d) { return "translate(" + projection([d.xcoord, d.ycoord]) + ")"; });
+        that.sites.transition().delay(100).duration(500).attr("transform", 
+          function(d) { 
+            return "translate(" + projection([d.xcoord, d.ycoord]) + ")"; 
+          });
         embossed.transition().delay(100).duration(500).attr("d", clip);
       }
     }
