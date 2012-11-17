@@ -1,7 +1,7 @@
 // This module sets up a dialog view with the different configuration options 
 // associated to creating a map-view over our data.
-define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 'checkboxes_widget', 'map_widget'], 
-    function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, checkboxesWidgetFactory, mapWidgetFactory) {
+define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 'checkboxes_widget', 'map_widget', 'data_table_widget', 'data_box_widget', 'checkboxes_widget'], 
+    function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, checkboxesWidgetFactory, mapWidgetFactory, dataTableWidgetFactory, dataBoxWidgetFactory, checkboxesWidgetFactory) {
   var dialogView = Backbone.View.extend( {
     
     elId: "map-config-dialog",
@@ -34,8 +34,14 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       binaryBoxesWidget = binaryBoxesWidgetFactory("#" + this.elId);
       binaryBoxesWidget.render();
 
-//      checkboxesWidget = checkboxesWidgetFactory("#" + this.elId);
-//      checkboxesWidget.render();
+      checkboxesWidget = checkboxesWidgetFactory("#" + this.elId);
+      checkboxesWidget.render();
+
+      //dataTableWidget = dataTableWidgetFactory("#" + this.elId);
+      //dataTableWidget.render();
+
+      dataBoxWidget = dataBoxWidgetFactory("#" + this.elId);
+      dataBoxWidget.render();
     },
 
     // We allow an external user to open the dialog.
