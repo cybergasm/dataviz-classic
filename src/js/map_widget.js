@@ -16,8 +16,11 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Save a reference
       var that = this;
 
+      var width = 1280;
+      var height = 800;
+
       var rankRamp = d3.scale.linear().domain([0,.005]).range([1,10]).clamp(true);
-  
+
       var projection = d3.geo.azimuthal()
         .scale(2500)
         .origin([22.8,38.6])
@@ -31,8 +34,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .projection(projection);
 
       var mapsvg = d3.select("#" + this.mapId).append("svg:svg")
-        .attr("width", 1280)
-        .attr("height", 800);
+        .attr("width", width)
+        .attr("height", height);
 
       var map = mapsvg.append("svg:g").attr("class", "map")
         .attr("transform", "translate(2,3)");
@@ -68,6 +71,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           .delay(300)
           .duration(1000)
           .style("opacity", .85);
+
         });
 
       function clip(d) {
@@ -81,8 +85,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
         projection.origin([clickedPoint.xcoord, clickedPoint.ycoord]);
         projection.scale(4500);
-        sites.transition().duration(50).attr("transform", function(d) { return "translate(" + projection([d.xcoord, d.ycoord]) + ")"; });
-        embossed.transition().duration(50).attr("d", clip);
+        sites.transition().delay(100).duration(500).attr("transform", function(d) { return "translate(" + projection([d.xcoord, d.ycoord]) + ")"; });
+        embossed.transition().delay(100).duration(500).attr("d", clip);
       }
     }
 });
