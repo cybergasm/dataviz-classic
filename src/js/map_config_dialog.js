@@ -1,17 +1,13 @@
 // This module sets up a dialog view with the different configuration options 
 // associated to creating a map-view over our data.
-<<<<<<< HEAD
-define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 'checkboxes_widget', 'map_widget', 'data_table_widget', 'data_box_widget', 'checkboxes_widget'], 
-    function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, checkboxesWidgetFactory, mapWidgetFactory, dataTableWidgetFactory, dataBoxWidgetFactory, checkboxesWidgetFactory) {
-=======
+
 define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 
   'checkboxes_widget', 'map_widget', 'data_module', 'map_config_model'], 
     function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, 
       checkboxesWidgetFactory, mapWidgetFactory, dataModule, 
       mapConfigModelFactory) {
   
->>>>>>> bea21d399230d846aa66bdf5a665e5562f7cb4ed
-  var dialogView = Backbone.View.extend( {
+    var dialogView = Backbone.View.extend( {
     
     elId: "map-config-dialog",
 
