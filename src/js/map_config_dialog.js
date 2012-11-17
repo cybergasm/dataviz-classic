@@ -35,7 +35,6 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         width: 1280,
         height: "auto",
         close: function() {
-          console.log("On dialog close.")
           $("#" + that.elId).remove();
         }
       });
