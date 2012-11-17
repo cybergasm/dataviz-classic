@@ -26,6 +26,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
 
     // Adds a dialog div and configures it to be hidden.
     render: function() {
+      var that = this;
       $(this.el).append("<div id=\"" + this.elId + "\"></div>");
       $("#" + this.elId, this.el).dialog({
         autoOpen: false,
@@ -33,6 +34,10 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         hide: "blind",
         width: 1280,
         height: "auto",
+        close: function() {
+          console.log("On dialog close.")
+          $("#" + that.elId).remove();
+        }
       });
 
       parallelCoordWidget = parallelCoordWidgetFactory(
