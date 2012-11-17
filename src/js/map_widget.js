@@ -8,6 +8,9 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       _.bindAll(this, 'render');
       
       this.el = $(options.parentElem);
+
+      // Make ourselvs a listener to when the visible places change.
+      dataModule.bind("change:visiblePlaces", this.updateViewWithSelected);
     },
 
     render: function() {

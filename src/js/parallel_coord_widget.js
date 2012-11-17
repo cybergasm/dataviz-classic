@@ -15,17 +15,28 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     line: d3.svg.line(),
 
     initialize: function(options) {
-      _.bindAll(this, 'render', 'updateViewWithSelected');
+      _.bindAll(this, 'render');
       
       this.el = $(options.parentElem);
       
-      this.model = options.model
+      this.model = options.model;
 
       // Save our data module so we can access it within inner functions  
-      this.dataModule = dataModule
+      this.dataModule = dataModule;
+      
+      var that = this;
+      
+      function updateViewWithSelected() {
+        
+        that.foreground.style("display", function(d, i) { 
+          // Check if the currently visible places have an entry for this data
+          // point
+          return (dataModule.get("visiblePlaces")[d['name']] ? null : "none");
+        });
+      }
 
       // Make ourselvs a listener to when the visible places change.
-      dataModule.bind("change:visiblePlaces", this.updateViewWithSelected);
+      dataModule.bind("change:visiblePlaces", updateViewWithSelected);
 
       this.w = 1280 - this.m[1] - this.m[3];
       this.h = 300 - this.m[0] - this.m[2];
@@ -33,16 +44,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       this.x = d3.scale.ordinal().rangePoints([0,this.w], 1);
 
       axis = d3.svg.axis().orient("left");
-    },
-
-    // Changes the lines to display the selected ones
-    updateViewWithSelected: function() {
-      var that = this;
-      this.foreground.style("display", function(d, i) { 
-        // Check if the currently visible places have an entry for this data
-        // point
-        return (dataModule.get("visiblePlaces")[d['name']] ? null : "none");
-      });
     },
 
     // Draws the parallel coordinates on screen

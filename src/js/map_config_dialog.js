@@ -2,10 +2,11 @@
 // associated to creating a map-view over our data.
 
 define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 
-  'checkboxes_widget', 'map_widget', 'data_module', 'map_config_model'], 
+  'checkboxes_widget', 'map_widget', 'data_module', 'map_config_model', 
+  'data_box_widget'], 
     function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, 
       checkboxesWidgetFactory, mapWidgetFactory, dataModule, 
-      mapConfigModelFactory) {
+      mapConfigModelFactory, dataBoxWidgetFactory) {
   
     var dialogView = Backbone.View.extend( {
     
