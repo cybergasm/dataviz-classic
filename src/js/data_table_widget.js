@@ -12,10 +12,21 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       this.model = options.model
 
       // Make ourselvs a listener to when the visible places change.
-      dataModule.bind("change:visiblePlaces", this.updateViewWithSelected);
+      dataModule.bind("change:visiblePlaces", updateViewWithSelected);
 
       // Save our data module so we can access it within inner functions  
       this.dataModule = dataModule
+
+      var that = this;
+
+      function updateViewWithSelected(){
+
+        that.rows.style("display", function(d, i) { 
+          // Check if the currently visible places have an entry for this data
+          // point
+          return (dataModule.get("visiblePlaces")[d['name']] ? null : "none");
+        });
+      }
     },
 
     render: function() {
@@ -39,14 +50,14 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .text(function(column) { return column; });
 
       //creates a row for each object in data
-      rows = tbody.selectAll("tr")
+      this.rows = tbody.selectAll("tr")
         .data(dataModule.polisData)
         .enter()
         .append("tr")
         .style("display", null);
 
       //creates a cell for each column in each row
-      cells = rows.selectAll("td")
+      cells = this.rows.selectAll("td")
         .data(function(row) {
           return columns.map(function(column) {
             return {column: column, value: row[column]};

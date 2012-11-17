@@ -3,10 +3,10 @@
 
 define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 
   'checkboxes_widget', 'map_widget', 'data_module', 'map_config_model', 
-  'data_box_widget'], 
+  'data_box_widget', 'data_table_widget'], 
     function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, 
       checkboxesWidgetFactory, mapWidgetFactory, dataModule, 
-      mapConfigModelFactory, dataBoxWidgetFactory) {
+      mapConfigModelFactory, dataBoxWidgetFactory, dataTableWidgetFactory) {
   
     var dialogView = Backbone.View.extend( {
     
@@ -54,8 +54,8 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       checkboxesWidget = checkboxesWidgetFactory("#" + this.elId);
       checkboxesWidget.render();
 
-      //dataTableWidget = dataTableWidgetFactory("#" + this.elId);
-      //dataTableWidget.render();
+      dataTableWidget = dataTableWidgetFactory("#" + this.elId);
+      dataTableWidget.render();
 
       dataBoxWidget = dataBoxWidgetFactory("#" + this.elId);
       dataBoxWidget.render();
