@@ -4,18 +4,21 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
     formId: "checkboxes",
 
-    initialize: function(options) {
-      _.bindAll(this, 'render');
-      
-      this.el = $(options.parentElem);
+    events : {}, 
 
-      this.model = options.model
+    initialize: function(options) {
+      _.bindAll(this, 'render', 'clickedVal');
+      
+      this.model = options.model;
 
       // Make ourselvs a listener to when the visible places change.
-      dataModule.bind("change:visiblePlaces", this.updateViewWithSelected);
+      //dataModule.bind("change:visiblePlaces", this.updateViewWithSelected);
 
       // Save our data module so we can access it within inner functions  
-      this.dataModule = dataModule
+      this.dataModule = dataModule;
+      this.events["click input[type=checkbox]"] = 'clickedVal';
+
+      this.render()
     },
 
     render: function() {
@@ -24,25 +27,28 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Save a reference
       var that = this;
 
-      var form = d3.select("#" + this.formId).append("form")
-        .attr("width", 600)
-        .attr("height", 200)
-        .append("form");
+      // For each field, adds all of the checkbox values that correspond to the
+      // option
+      for(var i = 0; i < dataModule.checkboxFieldNames.length; i++) {
+        var curField = dataModule.checkboxFieldNames[i];
+        var formId = curField+"-form";
+        $("#" + this.formId, this.el).append("<div id=\"" + formId + 
+          "\"</div>");
 
-      var fieldName = function(d){ return d;}; // returns name of column in CSV
+        var fieldValues = dataModule.checkboxFieldValues[curField];
+        for (var j = 0; j < fieldValues.length; 
+          j++) {
+          var curVal = fieldValues[j];
+          $("#" + formId, this.el).append("<input type=\"checkbox\" id=\"" + 
+            curVal + "\" name=\"" + curVal + "\" checked=\"true\" />");
+          $("#" + formId, this.el).append("<label for=\"" + curVal + "\">" + 
+            curVal + "</label>");
+        }
+      }
+    },
 
-      var checkboxes = form.selectAll("p")
-        .data(dataModule.checkboxFieldNames)
-        .enter()
-        .append("p")
-        .attr("class", "checkboxForm")
-        .attr("type", "input")
-        .attr("id", fieldName)
-        .attr("values", "string");
-
-      var labels = form.selectAll("p").append("label")
-        .text(fieldName)
-        .attr("for", fieldName);
+    clickedVal: function(e) {
+      console.log("CLICKED " + $("#" + e.target['id']).is(":checked"))
     }
 });
 

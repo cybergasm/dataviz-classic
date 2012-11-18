@@ -30,6 +30,15 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           return that.polisData[0][d] == "binary";});
         that.checkboxFieldNames = headers.filter(function(d) {
           return that.polisData[0][d] == "checkbox";});
+        
+        // Get set of possible values for every checkbox field name
+        that.checkboxFieldValues  = {};
+
+        for (var i = 0; i < that.checkboxFieldNames.length; i++) {
+          var curName = that.checkboxFieldNames[i];
+          that.checkboxFieldValues[curName] = 
+            that.polisData[1][curName].split(',');
+        }
 
         that.allFieldNames = headers;
 

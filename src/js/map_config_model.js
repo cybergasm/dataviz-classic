@@ -19,6 +19,7 @@ define(['backbone', 'data_module'], function(Backbone, dataModule) {
   var parallelConfigModel = Backbone.Model.extend({
 
     initialize: function() {
+      
       for (var i = 0; i < dataModule.parallelFieldNames.length; i++) {
         // Each parallel field name points to a tuple of values showing the
         // current min and max set for this value.
@@ -28,11 +29,23 @@ define(['backbone', 'data_module'], function(Backbone, dataModule) {
     }
   });
 
+  var checkboxConfigModel = Backbone.Model.extend({
+
+    initialize: function() {
+
+      for (var i = 0; i < dataModule.checkboxFieldNames.length; i++) {
+        var curName = dataModule.checkboxFieldNames[i];
+        this.set(curName, dataModule.checkboxFieldValues[curName]);
+      }
+    }
+  });
+
   var mapConfigModel = Backbone.Model.extend({
 
     initialize: function() {
       this.set("binaryConfig", new binaryConfigModel());
       this.set("parallelConfig", new parallelConfigModel());
+      this.set("checkboxConfigModel", new checkboxConfigModel());
     }
   });
 

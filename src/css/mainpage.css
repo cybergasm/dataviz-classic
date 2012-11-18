@@ -108,7 +108,7 @@ svg {
   height:400px;
   overflow:auto;
 }
-
+*
 #checkboxes {
   overflow-y:auto;
   overflow-x:hidden;
