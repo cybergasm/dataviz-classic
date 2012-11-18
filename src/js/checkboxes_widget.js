@@ -17,7 +17,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Save our data module so we can access it within inner functions  
       this.dataModule = dataModule;
       this.events["click input[type=checkbox]"] = 'clickedVal';
-
+      
       this.render()
     },
 
@@ -52,7 +52,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     }
 });
 
-  return function(parent_) {
-    return new checkboxesWidget({parentElem:parent_});
+  return function(model_) {
+    return new checkboxesWidget({model:model_});
   }
 });
