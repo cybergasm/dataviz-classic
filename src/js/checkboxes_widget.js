@@ -7,16 +7,16 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     events : {}, 
 
     initialize: function(options) {
-      _.bindAll(this, 'render', 'clickedVal');
+      _.bindAll(this, 'render');
       
       this.model = options.model;
+      this.el = $(options.parent);
 
       // Make ourselvs a listener to when the visible places change.
       //dataModule.bind("change:visiblePlaces", this.updateViewWithSelected);
 
       // Save our data module so we can access it within inner functions  
       this.dataModule = dataModule;
-      this.events["click input[type=checkbox]"] = 'clickedVal';
       
       this.render()
     },
@@ -27,32 +27,48 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Save a reference
       var that = this;
 
-      // For each field, adds all of the checkbox values that correspond to the
-      // option
-      for(var i = 0; i < dataModule.checkboxFieldNames.length; i++) {
-        var curField = dataModule.checkboxFieldNames[i];
-        var formId = curField+"-form";
-        $("#" + this.formId, this.el).append("<div id=\"" + formId + 
-          "\"</div>");
-
-        var fieldValues = dataModule.checkboxFieldValues[curField];
-        for (var j = 0; j < fieldValues.length; 
-          j++) {
-          var curVal = fieldValues[j];
-          $("#" + formId, this.el).append("<input type=\"checkbox\" id=\"" + 
-            curVal + "\" name=\"" + curVal + "\" checked=\"true\" />");
-          $("#" + formId, this.el).append("<label for=\"" + curVal + "\">" + 
-            curVal + "</label>");
-        }
+      var clickedVal = function(e) {
+        console.log("CLICKED " + e.id + " " + e.checked);
       }
-    },
 
-    clickedVal: function(e) {
-      console.log("CLICKED " + $("#" + e.target['id']).is(":checked"))
+      var form = d3.select("#" + this.formId);
+
+      form = form.selectAll("div")
+        .data(dataModule.checkboxFieldNames)
+        .enter()
+        .append("div")
+        .attr("id", function(d) { return d});
+
+      // Go through the different checkbox types and append the appropriate 
+      // options.
+      for (var i = 0; i < dataModule.checkboxFieldNames.length; i++) {
+        var curOption = dataModule.checkboxFieldNames[i];
+        var curValues = dataModule.checkboxFieldValues[curOption];
+        var curDiv = form.filter(function(d, i) { return d == curOption});
+
+        // Append a label for every option of the checkboxes
+        curDiv.selectAll("label")
+          .data(curValues)
+          .enter()
+          .append("label")
+          .attr("for", function(d) { return d; })
+          .attr("id", function(d) { return d + "-label"; })
+          .text(function(d) { return d; });
+
+        // For every label append a checkbox before the label
+        for (var j = 0; j < curValues.length; j++) {
+          curDiv.insert("input", "#" + curValues[j] + "-label")
+          .attr("type", "checkbox")
+          .attr("name", curValues[i])
+          .attr("id", curValues[i])
+          .on("click", function() { clickedVal(this); });
+        }
+          
+      }  
     }
 });
 
-  return function(model_) {
-    return new checkboxesWidget({model:model_});
+  return function(parent_, model_) {
+    return new checkboxesWidget({model:model_, parent:parent_});
   }
 });

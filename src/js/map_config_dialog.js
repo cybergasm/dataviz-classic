@@ -50,8 +50,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
 
       binaryBoxesWidget = binaryBoxesWidgetFactory("#" + this.elId, this.model);
 
-      checkboxesWidget = checkboxesWidgetFactory(this.model);
-      $("#" + this.elId).append(checkboxesWidget.el);
+      checkboxesWidget = checkboxesWidgetFactory("#" + this.elId, this.model);
 
       dataTableWidget = dataTableWidgetFactory("#" + this.elId);
       dataTableWidget.render();
