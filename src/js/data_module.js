@@ -89,9 +89,9 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         for(var i = 0; i < that.binaryFieldNames.length; i++) {
           var bField = that.binaryFieldNames[i];
           var curBinaryField = mapConfigModel.get("binaryConfig").get(bField);
-          noFieldSetting = curBinaryField[0];
-          yesFieldSetting = curBinaryField[1];
-          toCheckValue = toCheck[bField];
+          var noFieldSetting = curBinaryField[0];
+          var yesFieldSetting = curBinaryField[1];
+          var toCheckValue = toCheck[bField];
 
           if(yesFieldSetting == true) {
             // 0 is off and 1 is on, return false if toCheckValue == 0
@@ -133,6 +133,12 @@ define(['backbone', 'd3'], function (Backbone, d3) {
       for (var i = 0; i < this.parallelFieldNames.length; i++) {
         mapConfigModel.get("parallelConfig").bind(
           "change:" + this.parallelFieldNames[i], filterData);
+      }
+
+      // Register to listen to updates of binary fields
+      for (var i = 0; i < this.binaryFieldNames.length; i++) {
+        mapConfigModel.get("binaryConfig").bind(
+          "change:" + this.binaryFieldNames[i], filterData);
       }
     }  
   });

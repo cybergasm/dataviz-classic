@@ -3,34 +3,13 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
   var binaryBoxesWidget = Backbone.View.extend( {
 
     formId: "binary",
-
-    events : {"click input[type=checkbox]" : 'clickBox'},
-
-    clickBox: function(e) {
-      var checkbox = e.target;
-      var fieldNameAndValue = checkbox['id'].split("_");
-      var currentField = fieldNameAndValue[0];
-      var fieldValue = fieldNameAndValue[1];
-      var pastBinarySetting = that.model.get("binaryConfig");
-
-      if (fieldValue == "yes") {
-        that.model.get("binaryConfig").set(currentField, 
-          [pastBinarySetting[0],checkbox['checked']])
-      } else if (fieldValue == "no") {
-        that.model.get("binaryConfig").set(currentField, 
-          [checkbox['checked'],pastBinarySetting[1]])
-      }
-    },
-
+    
     initialize: function(options) {
       _.bindAll(this, 'render');
-      
+
       this.model = options.model;
 
       this.el = $(options.parent);
-
-      // Make ourselves a listener to when the visible places change.
-      dataModule.bind("change:visiblePlaces", this.updateViewWithSelected);
 
       // Save our data module so we can access it within inner functions  
       this.dataModule = dataModule;
@@ -51,6 +30,22 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .append("form");
 
       var fieldName = function(d){ return d;}; // returns name of column in CSV
+      var testClick = function(d){ console.log(this);};
+      
+      var clickBox = function(checkbox) {
+        var fieldName = checkbox.name; // eg. "Demos"
+        var fieldId = checkbox.id; // eg. "Demos_no"
+        var fieldValue = (fieldId.split("-"))[1]; // "yes" or "no"
+        var pastBinarySetting = that.model.get("binaryConfig").get(fieldName);
+
+        if (fieldValue == "yes") {
+        that.model.get("binaryConfig").set(fieldName, 
+          [pastBinarySetting[0],checkbox['checked']]);
+        } else if (fieldValue == "no") {
+        that.model.get("binaryConfig").set(fieldName, 
+          [checkbox['checked'],pastBinarySetting[1]]);
+        }
+      }
 
       var binaryBoxes = form.selectAll("p")
         .data(dataModule.binaryFieldNames)
@@ -67,18 +62,18 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .attr("class", "binaryBox")
         .attr("type", "checkbox")
         .attr("checked", "true")
-        .attr("id", fieldName + "_no")
-        .attr("name", fieldName)
-        .on("click", function (){console.log("Hello");});
-//        .attr("onClick", clickBox(this));
+        .attr("id", function(d){ return d + "-no";})
+        .attr("name", function(d){ return d;})
+        .on("click", function(d) { clickBox(this);});
       binaryBoxes.append("input")
         .attr("class", "binaryBox")
         .attr("type", "checkbox")
         .attr("checked", "true")
-        .attr("id", fieldName + "_yes")
-        .attr("name", fieldName);
-        //.attr("onClick", clickBox(this));
+        .attr("id", function(d){ return d + "-yes";})
+        .attr("name", function(d){ return d;})
+        .on("click", function(d) { clickBox(this);});
     }
+
 });
 
   return function(parent_, model_) {
