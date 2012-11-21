@@ -28,7 +28,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       var that = this;
 
       var clickedVal = function(e) {
-        console.log("CLICKED " + e.id + " " + e.checked);
+        console.log("Setting " + e.id + " to " + e.checked);
+        that.model.get("checkboxConfig").set(e.id, e.checked);
       }
 
       var form = d3.select("#" + this.formId);
@@ -60,7 +61,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           curDiv.insert("input", "#" + curValues[j] + "-label")
           .attr("type", "checkbox")
           .attr("name", curValues[i])
-          .attr("id", curValues[i])
+          .attr("checked", true)
+          .attr("id", curOption + "-" + curValues[j])
           .on("click", function() { clickedVal(this); });
         }
           

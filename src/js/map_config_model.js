@@ -28,11 +28,27 @@ define(['backbone', 'data_module'], function(Backbone, dataModule) {
     }
   });
 
+  var checkboxConfigModel = Backbone.Model.extend({
+
+    initialize: function() {
+      for (var i = 0; i < dataModule.checkboxFieldNames.length; i++) {
+        // We create a map of option_category-option_name to true/false value
+        // of that selection
+        var name = dataModule.checkboxFieldNames[i];
+        var values = dataModule.checkboxFieldValues[name];
+        for (var j = 0; j < values.length; j++) {
+          this.set(name + "-" + values[j], true);  
+       }
+      }
+    }
+  });
+
   var mapConfigModel = Backbone.Model.extend({
 
     initialize: function() {
       this.set("binaryConfig", new binaryConfigModel());
       this.set("parallelConfig", new parallelConfigModel());
+      this.set("checkboxConfig", new checkboxConfigModel());
     }
   });
 

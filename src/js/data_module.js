@@ -113,6 +113,36 @@ define(['backbone', 'd3'], function (Backbone, d3) {
             } 
           }
         }
+
+        // Check the checkbox values by going through every name and category
+        // and checking if it is checked by user and if it is in the data for
+        // this city. If any of the associated values with the city are checked
+        // we return true.        
+        for (var i = 0; i < that.checkboxFieldNames.length; i++) {
+          var name = that.checkboxFieldNames[i];
+          var valuesInData = toCheck[name];
+        
+          var values = that.checkboxFieldValues[name];
+          var containsCheckBox = false;
+
+          // Go through all the possible values, query the model, and check if
+          // (1) the value is checked and (2) if the values string contains it 
+          // in the data.
+          for (var j = 0; j < values.length; j++) {
+            var selected = mapConfigModel.get("checkboxConfig").get(
+              name + "-" + values[j]);
+            var setInData = valuesInData.indexOf(values[j]) > -1;
+            
+            if (setInData && selected) {
+              // One of the checked values is in the data
+              containsCheckBox = true;
+            }
+          }
+          if (!containsCheckBox) {
+            return false;
+          }
+        }
+
         return true;
       }
 
@@ -139,6 +169,16 @@ define(['backbone', 'd3'], function (Backbone, d3) {
       for (var i = 0; i < this.binaryFieldNames.length; i++) {
         mapConfigModel.get("binaryConfig").bind(
           "change:" + this.binaryFieldNames[i], filterData);
+      }
+
+      // Listen to changes in checkbox values
+      for (var i = 0; i < this.checkboxFieldNames.length; i++) {
+        var name = this.checkboxFieldNames[i];
+        var values = this.checkboxFieldValues[name];
+        for (var j = 0; j < values.length; j++) {
+          var changeHandler = "change:" + name + "-" + values[j];
+          mapConfigModel.get("checkboxConfig").bind(changeHandler, filterData);
+        }
       }
     }  
   });
