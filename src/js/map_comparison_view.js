@@ -1,16 +1,23 @@
 // This module is the view of multiple maps side-by-side. It also holds the
 // button for defining a new map.
-define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog'], 
-    function($, Backbone, dataModule, mapConfigDialogFactory) {
+define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog', 
+  'map_comparison_model'], 
+    function($, Backbone, dataModule, mapConfigDialogFactory, 
+      mapComparisonModelEditor) {
   var mapComparisonView = Backbone.View.extend( {
     
     buttonId: "defineViewButton",
     
-    events : {},
+    events: {},
 
     initialize: function(options) {
-      _.bindAll(this, 'render', 'newMap');
+      _.bindAll(this, 'render', 'newMap', 'addMap');
       this.render();
+      mapComparisonModelEditor.collection.bind('add', this.addMap);
+    },
+
+    addMap: function(map) {
+      console.log("Map saved")
     },
 
     // Adds the button to open dialog for defining a new map
