@@ -1,3 +1,5 @@
+// Module defines a widget which allows a user to filter data by toggling binary
+// data.
 define(['backbone', 'jquery-ui', 'd3', 'data_module'], 
     function(Backbone, $, d3, dataModule) {
   var binaryBoxesWidget = Backbone.View.extend( {

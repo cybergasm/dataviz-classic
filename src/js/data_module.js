@@ -18,9 +18,6 @@ define(['backbone', 'd3'], function (Backbone, d3) {
       // This will be called after all data has been loaded to give us a 
       // chance to do any extra processing
       function processData() {
-        // TODO: pull of all headers and keep them as state here
-        // Generate array of all headers for data
-        
         var headers = d3.keys(that.polisData[0]);
 
         // Generate array of headers that correspond to data in parallel form

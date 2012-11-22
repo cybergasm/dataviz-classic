@@ -58,11 +58,11 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         // For every label append a checkbox before the label
         for (var j = 0; j < curValues.length; j++) {
           curDiv.insert("input", "#" + curValues[j] + "-label")
-          .attr("type", "checkbox")
-          .attr("name", curValues[i])
-          .attr("checked", true)
-          .attr("id", curOption + "-" + curValues[j])
-          .on("click", function() { clickedVal(this); });
+            .attr("type", "checkbox")
+            .attr("name", curValues[i])
+            .attr("checked", true)
+            .attr("id", curOption + "-" + curValues[j])
+            .on("click", function() { clickedVal(this); });
         }
           
       }  
