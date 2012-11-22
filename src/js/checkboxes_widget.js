@@ -27,7 +27,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       var that = this;
 
       var clickedVal = function(e) {
-        console.log("Setting " + e.id + " to " + e.checked);
         that.model.get("checkboxConfig").set(e.id, e.checked);
       }
 

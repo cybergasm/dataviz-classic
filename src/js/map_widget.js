@@ -14,7 +14,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       var that = this;  
 
       function updateVisiblePlaces() {
-        console.log("In map update")
         that.sites.style("display", function(d, i) {
           return (dataModule.get("visiblePlaces")[d['name']] ? null : "none");
         });
