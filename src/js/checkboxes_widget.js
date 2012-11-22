@@ -1,3 +1,5 @@
+// Module which defines a set of checkboxes that users can use to filter 
+// government types.
 define(['backbone', 'jquery-ui', 'd3', 'data_module'], 
     function(Backbone, $, d3, dataModule) {
   var checkboxesWidget = Backbone.View.extend( {
@@ -11,9 +13,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       
       this.model = options.model;
       this.el = $(options.parent);
-
-      // Make ourselvs a listener to when the visible places change.
-      //dataModule.bind("change:visiblePlaces", this.updateViewWithSelected);
 
       // Save our data module so we can access it within inner functions  
       this.dataModule = dataModule;
@@ -68,7 +67,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           
       }  
     }
-});
+  });
 
   return function(parent_, model_) {
     return new checkboxesWidget({model:model_, parent:parent_});
