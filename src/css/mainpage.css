@@ -37,6 +37,22 @@ svg {
   width: 1280px;
   height: 700px;
 }
+
+.binaryForm {
+  display: -moz-inline-box;
+  display: inline-block;
+  width: 150px;
+  margin-left: 10px;
+  vertical-align: top;
+  font-family:arial;
+  font-size:small;
+}
+
+.savedMap {
+  float:left;
+  margin:10px;
+}
+
 /*#main {
   border:2px solid gray;
   margin:0 auto;
@@ -142,15 +158,6 @@ svg {
   display:block;
 }*/
 
-.binaryForm {
-  display: -moz-inline-box;
-  display: inline-block;
-  width: 150px;
-  margin-left: 10px;
-  vertical-align: top;
-  font-family:arial;
-  font-size:small;
-}
 /*
 .placeForm {
   margin-left: 0px;
