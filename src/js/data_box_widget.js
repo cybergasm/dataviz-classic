@@ -5,17 +5,23 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     boxId: "dataBox",
 
     initialize: function(options) {
-      _.bindAll(this, 'render');
+      _.bindAll(this, 'render', 'getId');
       
       this.el = $(options.parentElem);
 
-      this.model = options.model
+      this.model = options.model;
 
       // Make ourselvs a listener to when the visible places change.
       dataModule.bind("change:visiblePlaces", this.updateViewWithSelected);
 
       // Save our data module so we can access it within inner functions  
-      this.dataModule = dataModule
+      this.dataModule = dataModule;
+
+      this.render();
+    },
+
+    getId: function() {
+      return this.boxId;
     },
 
     render: function() {

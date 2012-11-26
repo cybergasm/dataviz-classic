@@ -15,7 +15,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     line: d3.svg.line(),
 
     initialize: function(options) {
-      _.bindAll(this, 'render');
+      _.bindAll(this, 'render', 'getId');
       
       this.el = $(options.parentElem);
       
@@ -43,6 +43,10 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       this.x = d3.scale.ordinal().rangePoints([0,this.w], 1);
 
       axis = d3.svg.axis().orient("left");
+    },
+
+    getId: function() {
+      return this.svgId;
     },
 
     // Draws the parallel coordinates on screen

@@ -5,7 +5,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     tableId: "dataTable",
 
     initialize: function(options) {
-      _.bindAll(this, 'render');
+      _.bindAll(this, 'render', 'getId');
       
       this.el = $(options.parentElem);
 
@@ -27,6 +27,12 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           return (dataModule.get("visiblePlaces")[d['name']] ? null : "none");
         });
       }
+
+      this.render();
+    },
+
+    getId: function() {
+      return this.tableId;
     },
 
     render: function() {

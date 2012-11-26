@@ -12,12 +12,14 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
     
     elId: "map-config-dialog",
     saveId: "save",
+    tabsId: "option-tabs",
+    tabsContentList: "tabs-list",
 
     events: {},
 
     initialize: function(options) {
       // This allows the enumerated methods to refer to this object
-      _.bindAll(this, 'render', 'openDialog', 'saveMap');
+      _.bindAll(this, 'render', 'openDialog', 'saveMap', 'renderOptionWidgets');
       this.el = $(options.parentElem);
 
       // Creates a model for this configuration
@@ -35,12 +37,49 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         mapComparisonModelEditor.config(this));
     },
 
+    // This function adds specified widgets to the view and adds an entry for
+    // each one with the tab object
+    renderOptionWidgets: function() {
+
+      parallelCoordWidget = parallelCoordWidgetFactory("#" + this.tabsId, 
+        this.model);
+      parallelCoordWidget.render();
+      $("#" + this.tabsContentList, this.el)
+        .append("<li><a href=\"#" + parallelCoordWidget.getId() + "\">" +
+          "Real-valued parameters</a></li>");
+
+      binaryBoxesWidget = binaryBoxesWidgetFactory("#" + this.tabsId, 
+        this.model);
+      $("#" + this.tabsContentList, this.el)
+        .append("<li><a href=\"#" + binaryBoxesWidget.getId() + "\">" +
+          "Binary Options Toggle</a></li>");
+      
+      checkboxesWidget = checkboxesWidgetFactory("#" + this.tabsId, 
+        this.model);
+      $("#" + this.tabsContentList, this.el)
+        .append("<li><a href=\"#" + checkboxesWidget.getId() + "\">" +
+          "Toggle Paramters</a></li>");
+
+      dataTableWidget = dataTableWidgetFactory("#" + this.tabsId);
+      $("#" + this.tabsContentList, this.el)
+        .append("<li><a href=\"#" + dataTableWidget.getId() + "\">" +
+          "Table of Cities</a></li>");
+
+      dataBoxWidget = dataBoxWidgetFactory("#" + this.tabsId);
+      $("#" + this.tabsContentList, this.el)
+        .append("<li><a href=\"#" + dataBoxWidget.getId() + "\">" +
+          "Data Box</a></li>");
+    },
+
     // Adds a dialog div and configures it to be hidden.
     render: function() {
       var that = this;
+
+      // Append the div that holds the elements for the dialog
       $(this.el)
         .append("<div id=\"" + this.elId + "\"></div>");
-
+      
+      // Append a button for saving and register functionality
       $("#" + this.elId, this.el)
         .append("<button id=\"" + this.saveId + "\">Save</button>");
 
@@ -50,6 +89,24 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
           that.saveMap();
         });
 
+      // Draws the map
+      mapWidget = mapWidgetFactory("#" + this.elId);
+      
+      // Create a tabs container
+      $("#" + this.elId, this.el)
+        .append("<div id=\"" + this.tabsId +"\"></div>");
+
+      $("#" + this.tabsId, this.el)
+        .append("<ul id=\""+ this.tabsContentList +"\"></ul>");
+
+      // Render the widgets and add each to the list that creates tabs
+      this.renderOptionWidgets();
+      
+      // Tell JQuery to create the tab view
+      $("#" + this.tabsId, this.el)
+        .tabs();
+
+      // Tell JQuery to treat this as a modal dialog box    
       $("#" + this.elId, this.el).dialog({
         autoOpen: false,
         show: "blind",
@@ -60,23 +117,6 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
           $("#" + that.elId).remove();
         }
       });
-
-      mapWidget = mapWidgetFactory("#" + this.elId);
-      mapWidget.render();
-
-      parallelCoordWidget = parallelCoordWidgetFactory(
-        "#" + this.elId, this.model);
-      parallelCoordWidget.render();
-
-      binaryBoxesWidget = binaryBoxesWidgetFactory("#" + this.elId, this.model);
-
-      checkboxesWidget = checkboxesWidgetFactory("#" + this.elId, this.model);
-
-      dataTableWidget = dataTableWidgetFactory("#" + this.elId);
-      dataTableWidget.render();
-
-      dataBoxWidget = dataBoxWidgetFactory("#" + this.elId);
-      dataBoxWidget.render();
     },
 
     // We allow an external user to open the dialog.

@@ -7,7 +7,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     formId: "binary",
     
     initialize: function(options) {
-      _.bindAll(this, 'render');
+      _.bindAll(this, 'render', 'getId');
 
       this.model = options.model;
 
@@ -17,6 +17,10 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       this.dataModule = dataModule;
 
       this.render();
+    },
+
+    getId: function() {
+      return this.formId;
     },
 
     render: function() {

@@ -21,6 +21,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
       // Make ourselvs a listener to when the visible places change.
       dataModule.bind("change:visiblePlaces", updateVisiblePlaces);
+
+      this.render();
     },
 
     render: function() {
