@@ -55,6 +55,9 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .projection(projection);
 
       var mapsvg = d3.select("#" + this.mapId).append("svg:svg")
+        // The following two attributes allow the map to later be resized.
+        .attr("viewBox", "0 0 " + width + " " + height)
+        .attr("preserveAspectRatio", "xMidYMid")
         .attr("width", width)
         .attr("height", height);
 

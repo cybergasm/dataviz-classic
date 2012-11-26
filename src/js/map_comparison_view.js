@@ -19,8 +19,13 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
 
     addMap: function(map) {
       console.log("Map saved")
+      var newMap = map.attributes.mapDialogRef.getMapPic();
+      $("svg", newMap)
+        .attr("width", 600)
+        .attr("height", 400);
+
       $("#" + this.savedMapsId)
-        .append(map.attributes.mapDialogRef.getMapPic());
+        .append(newMap);
     },
 
     // Adds the button to open dialog for defining a new map
