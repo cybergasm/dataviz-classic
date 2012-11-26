@@ -18,7 +18,6 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
     },
 
     addMap: function(map) {
-      console.log("Map saved")
       var newMap = map.attributes.mapDialogRef.getMapPic();
         
       newMap
@@ -26,8 +25,10 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
 
       $("svg", newMap)
         .attr("width", 600)
-        .attr("height", 400);
-
+        .attr("height", 400)
+        .on("click", function() {
+          map.attributes.mapDialogRef.openDialog();
+        });
       $("#" + this.savedMapsId)
         .append(newMap);
     },

@@ -3,6 +3,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
   var dataTableWidget = Backbone.View.extend( {
 
     tableId: "dataTable",
+    filteredDataId: "visiblePlaces",
 
     initialize: function(options) {
       _.bindAll(this, 'render', 'getId');
@@ -11,8 +12,10 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
       this.model = options.model
 
+      this.filteredDataId = this.filteredDataId + this.model.get("modelNum");
+
       // Make ourselvs a listener to when the visible places change.
-      dataModule.bind("change:visiblePlaces", updateViewWithSelected);
+      dataModule.bind("change:" + this.filteredDataId, updateViewWithSelected);
 
       // Save our data module so we can access it within inner functions  
       this.dataModule = dataModule
@@ -24,7 +27,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         that.rows.style("display", function(d, i) { 
           // Check if the currently visible places have an entry for this data
           // point
-          return (dataModule.get("visiblePlaces")[d['name']] ? null : "none");
+          return (dataModule.get(that.filteredDataId)[d['name']] ? null : 
+            "none");
         });
       }
 
@@ -75,7 +79,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     }
 });
 
-  return function(parent_) {
-    return new dataTableWidget({parentElem:parent_});
+  return function(parent_, model_) {
+    return new dataTableWidget({parentElem:parent_, model:model_});
   }
 });

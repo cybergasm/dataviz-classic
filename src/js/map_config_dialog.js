@@ -24,8 +24,11 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       this.el = $(options.parentElem);
 
       // Creates a model for this configuration
-      this.model = mapConfigModelFactory();
+      this.model = mapConfigModelFactory(
+        mapComparisonModelEditor.collection.length);
       
+      this.dataModule = dataModule;
+
       // Makes the data model listen to changes to our configuration
       dataModule.listenToMapConfig(this.model);
 
@@ -37,7 +40,6 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
     },
 
     saveMap: function() {
-      console.log("Saving map")
       mapComparisonModelEditor.collection.add(
         mapComparisonModelEditor.config(this));
       $("#" + this.elId).dialog("close");
@@ -66,12 +68,14 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         .append("<li><a href=\"#" + this.checkboxesWidget.getId() + "\">" +
           "Toggle Paramters</a></li>");
 
-      this.dataTableWidget = dataTableWidgetFactory("#" + this.tabsId);
+      this.dataTableWidget = dataTableWidgetFactory("#" + this.tabsId,
+        this.model);
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.dataTableWidget.getId() + "\">" +
           "Table of Cities</a></li>");
 
-      this.dataBoxWidget = dataBoxWidgetFactory("#" + this.tabsId);
+      this.dataBoxWidget = dataBoxWidgetFactory("#" + this.tabsId,
+        this.model);
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.dataBoxWidget.getId() + "\">" +
           "Data Box</a></li>");
@@ -81,6 +85,13 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
     render: function() {
       var that = this;
 
+      this.elId = this.elId + mapComparisonModelEditor.collection.length;
+
+      // Check if this dialog is already made.
+      if ($("#" + this.elId).length != 0) {
+        this.openDialog();
+        return;
+      }
       // Append the div that holds the elements for the dialog
       $(this.el)
         .append("<div id=\"" + this.elId + "\"></div>");
@@ -96,7 +107,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         });
 
       // Draws the map
-      this.mapWidget = mapWidgetFactory("#" + this.elId);
+      this.mapWidget = mapWidgetFactory("#" + this.elId, this.model);
       
       // Create a tabs container
       $("#" + this.elId, this.el)
@@ -119,9 +130,6 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         hide: "blind",
         width: 1280,
         height: "auto",
-        close: function() {
-          $("#" + that.elId).remove();
-        }
       });
     },
 

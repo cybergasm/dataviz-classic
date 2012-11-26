@@ -3,6 +3,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
   var mapWidget = Backbone.View.extend( {
 
     mapId: "map",
+    filteredDataId: "visiblePlaces",
 
     initialize: function(options) {
       _.bindAll(this, 'render', 'cloneMap');
@@ -15,12 +16,17 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
       function updateVisiblePlaces() {
         that.sites.style("display", function(d, i) {
-          return (dataModule.get("visiblePlaces")[d['name']] ? null : "none");
+          return (dataModule.get(that.filteredDataId)[d['name']] ? null : 
+            "none");
         });
       }
 
+      // We want to specify the map and data specifically for this map view.
+      this.filteredDataId = this.filteredDataId + this.model.get("modelNum");
+      this.mapId = this.mapId + this.model.get("modelNum");
+
       // Make ourselvs a listener to when the visible places change.
-      dataModule.bind("change:visiblePlaces", updateVisiblePlaces);
+      dataModule.bind("change:" + this.filteredDataId, updateVisiblePlaces);
 
       this.render();
     },
@@ -121,7 +127,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     }
 });
   
-  return function(parent_) {
-    return new mapWidget({parentElem:parent_});
+  return function(parent_, model_) {
+    return new mapWidget({parentElem:parent_, model: model_});
   }
 });

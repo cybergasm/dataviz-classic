@@ -3,6 +3,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
   var dataBoxWidget = Backbone.View.extend( {
 
     boxId: "dataBox",
+    filteredDataId: "visiblePlaces",
 
     initialize: function(options) {
       _.bindAll(this, 'render', 'getId');
@@ -11,8 +12,11 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
       this.model = options.model;
 
+      this.filteredDataId = this.filteredDataId + this.model.get("modelNum");
+
       // Make ourselvs a listener to when the visible places change.
-      dataModule.bind("change:visiblePlaces", this.updateViewWithSelected);
+      dataModule.bind("change:" + this.filteredDataId, 
+        this.updateViewWithSelected);
 
       // Save our data module so we can access it within inner functions  
       this.dataModule = dataModule;
@@ -52,7 +56,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     }
 });
 
-  return function(parent_) {
-    return new dataBoxWidget({parentElem:parent_});
+  return function(parent_, model_) {
+    return new dataBoxWidget({parentElem:parent_, model:model_});
   }
 });

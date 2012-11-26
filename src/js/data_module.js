@@ -153,7 +153,8 @@ define(['backbone', 'd3'], function (Backbone, d3) {
             visiblePlaces[that.polisData[i].name] = that.polisData[i];
           }
         }
-        that.set("visiblePlaces", visiblePlaces);
+        that.set("visiblePlaces" + mapConfigModel.get("modelNum"), 
+          visiblePlaces);
       }
 
       // Register to listen to updates of parallel fields

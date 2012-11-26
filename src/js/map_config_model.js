@@ -52,7 +52,7 @@ define(['backbone', 'data_module'], function(Backbone, dataModule) {
     }
   });
 
-  return function() {
-    return new mapConfigModel();
+  return function(modelNum_) {
+    return new mapConfigModel({modelNum: modelNum_});
   }
 });
