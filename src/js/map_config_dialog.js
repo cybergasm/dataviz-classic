@@ -19,7 +19,8 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
 
     initialize: function(options) {
       // This allows the enumerated methods to refer to this object
-      _.bindAll(this, 'render', 'openDialog', 'saveMap', 'renderOptionWidgets');
+      _.bindAll(this, 'render', 'openDialog', 'saveMap', 'renderOptionWidgets',
+        'getMapPic');
       this.el = $(options.parentElem);
 
       // Creates a model for this configuration
@@ -31,43 +32,48 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       this.render();
     },
 
+    getMapPic: function() {
+      return this.mapWidget.cloneMap();
+    },
+
     saveMap: function() {
       console.log("Saving map")
       mapComparisonModelEditor.collection.add(
         mapComparisonModelEditor.config(this));
+      $("#" + this.elId).dialog("close");
     },
 
     // This function adds specified widgets to the view and adds an entry for
     // each one with the tab object
     renderOptionWidgets: function() {
 
-      parallelCoordWidget = parallelCoordWidgetFactory("#" + this.tabsId, 
+      this.parallelCoordWidget = parallelCoordWidgetFactory("#" + this.tabsId, 
         this.model);
-      parallelCoordWidget.render();
+      this.parallelCoordWidget.render();
       $("#" + this.tabsContentList, this.el)
-        .append("<li><a href=\"#" + parallelCoordWidget.getId() + "\">" +
+        .append("<li><a href=\"#" + this.parallelCoordWidget.getId() + "\">" +
           "Real-valued parameters</a></li>");
 
-      binaryBoxesWidget = binaryBoxesWidgetFactory("#" + this.tabsId, 
+      this.binaryBoxesWidget = binaryBoxesWidgetFactory("#" + this.tabsId, 
         this.model);
       $("#" + this.tabsContentList, this.el)
-        .append("<li><a href=\"#" + binaryBoxesWidget.getId() + "\">" +
+        .append("<li><a href=\"#" + this.binaryBoxesWidget.getId() + "\">" +
           "Binary Options Toggle</a></li>");
       
-      checkboxesWidget = checkboxesWidgetFactory("#" + this.tabsId, 
+      this.checkboxesWidget = checkboxesWidgetFactory("#" + this.tabsId, 
         this.model);
       $("#" + this.tabsContentList, this.el)
-        .append("<li><a href=\"#" + checkboxesWidget.getId() + "\">" +
+        .append("<li><a href=\"#" + this.checkboxesWidget.getId() + "\">" +
           "Toggle Paramters</a></li>");
 
-      dataTableWidget = dataTableWidgetFactory("#" + this.tabsId);
+      this.dataTableWidget = dataTableWidgetFactory("#" + this.tabsId);
       $("#" + this.tabsContentList, this.el)
-        .append("<li><a href=\"#" + dataTableWidget.getId() + "\">" +
+        .append("<li><a href=\"#" + this.dataTableWidget.getId() + "\">" +
           "Table of Cities</a></li>");
 
-      dataBoxWidget = dataBoxWidgetFactory("#" + this.tabsId);
+      this.dataBoxWidget = dataBoxWidgetFactory("#" + this.tabsId);
       $("#" + this.tabsContentList, this.el)
-        .append("<li><a href=\"#" + dataBoxWidget.getId() + "\">" +
+        .append("<li><a href=\"#" + this.dataBoxWidget.getId() + "\">" +
           "Data Box</a></li>");
     },
 
@@ -90,7 +96,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         });
 
       // Draws the map
-      mapWidget = mapWidgetFactory("#" + this.elId);
+      this.mapWidget = mapWidgetFactory("#" + this.elId);
       
       // Create a tabs container
       $("#" + this.elId, this.el)

@@ -7,7 +7,8 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
   var mapComparisonView = Backbone.View.extend( {
     
     buttonId: "defineViewButton",
-    
+    savedMapsId: "savedMaps",
+
     events: {},
 
     initialize: function(options) {
@@ -18,6 +19,8 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
 
     addMap: function(map) {
       console.log("Map saved")
+      $("#" + this.savedMapsId)
+        .append(map.attributes.mapDialogRef.getMapPic());
     },
 
     // Adds the button to open dialog for defining a new map
@@ -26,6 +29,8 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
         "New Map</button>");
       $(this.el).find("#" + this.buttonId).button();
       this.events['click button#' + this.buttonId] = 'newMap';
+
+      $(this.el).append("<div id=\"" + this.savedMapsId + "\"></div>");
     },
 
     newMap: function() {

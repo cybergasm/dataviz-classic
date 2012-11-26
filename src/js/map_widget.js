@@ -5,7 +5,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     mapId: "map",
 
     initialize: function(options) {
-      _.bindAll(this, 'render');
+      _.bindAll(this, 'render', 'cloneMap');
       
       this.el = $(options.parentElem);
 
@@ -23,6 +23,12 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       dataModule.bind("change:visiblePlaces", updateVisiblePlaces);
 
       this.render();
+    },
+
+    cloneMap: function() {
+      return $("#" + this.mapId)
+        .clone()
+        .removeAttr("id");
     },
 
     render: function() {
