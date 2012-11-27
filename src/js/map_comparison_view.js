@@ -38,6 +38,18 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
       // grid view.
       $("#map" + map.attributes.mapDialogRef.model.get("modelNum"))
         .attr("class", "savedMap")
+        .hover(
+          // On hover start
+          function () {
+            $(this)
+              .addClass("mapHover");
+          },
+          // On hover end
+          function () {  
+            $(this)
+              .removeClass("mapHover");
+          }
+        )
         .prepend(newMap);
 
       // Reset the sortable view

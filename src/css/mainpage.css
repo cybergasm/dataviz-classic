@@ -33,6 +33,10 @@ svg {
   cursor: move;
 }
 
+.mapHover {
+  border: 3px solid gray;
+}
+
 #map-config-dialog {
   width: 1280px;
   height: 700px;
