@@ -20,11 +20,8 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
 
     addMap: function(map) {
       var newMap = map.attributes.mapDialogRef.getMapPic();
-        
-      newMap
-        .attr("class", "savedMap")
-        .attr("id", "map" + map.attributes.mapDialogRef.model.get("modelNum"));
-
+      
+      // Resize the map picture  
       $("svg", newMap)
         .attr("width", 600)
         .attr("height", 400)
@@ -32,8 +29,20 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
           map.attributes.mapDialogRef.openDialog();
         });
 
+      // Add an element for sortable view
       $("#" + this.savedMapsId)
-        .append(newMap);
+        .append("<li id =\"map" + 
+          map.attributes.mapDialogRef.model.get("modelNum") + "\"></li>")
+    
+      // Add the map to the element; we aklso add the class to make it a
+      // grid view.
+      $("#map" + map.attributes.mapDialogRef.model.get("modelNum"))
+        .attr("class", "savedMap")
+        .prepend(newMap);
+
+      // Reset the sortable view
+      $("#" + this.savedMapsId)
+        .sortable();
     },
 
     removeMap: function(map) {
@@ -49,7 +58,8 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
       $(this.el).find("#" + this.buttonId).button();
       this.events['click button#' + this.buttonId] = 'newMap';
 
-      $(this.el).append("<div id=\"" + this.savedMapsId + "\"></div>");
+      $(this.el).append("<ul id=\"" + this.savedMapsId + "\"></ul>");
+      
     },
 
     newMap: function() {

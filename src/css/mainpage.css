@@ -51,6 +51,8 @@ svg {
 .savedMap {
   float:left;
   margin:10px;
+  width:600px;
+  height:400px;
 }
 
 /*#main {
