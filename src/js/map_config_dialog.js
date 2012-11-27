@@ -14,6 +14,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
     saveId: "save",
     tabsId: "option-tabs",
     tabsContentList: "tabs-list",
+    configurationCollectionEntry: null,
 
     events: {},
 
@@ -40,8 +41,15 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
     },
 
     saveMap: function() {
+      if (this.configurationCollectionEntry == null) {
+        this.configurationCollectionEntry = 
+          mapComparisonModelEditor.config(this);
+      } else {
+        mapComparisonModelEditor.collection.remove(
+          this.configurationCollectionEntry);
+      }
       mapComparisonModelEditor.collection.add(
-        mapComparisonModelEditor.config(this));
+        this.configurationCollectionEntry);
       $("#" + this.elId).dialog("close");
     },
 

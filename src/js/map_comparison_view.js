@@ -15,13 +15,15 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
       _.bindAll(this, 'render', 'newMap', 'addMap');
       this.render();
       mapComparisonModelEditor.collection.bind('add', this.addMap);
+      mapComparisonModelEditor.collection.bind('remove', this.removeMap);
     },
 
     addMap: function(map) {
       var newMap = map.attributes.mapDialogRef.getMapPic();
         
       newMap
-        .attr("class", "savedMap");
+        .attr("class", "savedMap")
+        .attr("id", "map" + map.attributes.mapDialogRef.model.get("modelNum"));
 
       $("svg", newMap)
         .attr("width", 600)
@@ -29,8 +31,15 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
         .on("click", function() {
           map.attributes.mapDialogRef.openDialog();
         });
+
       $("#" + this.savedMapsId)
         .append(newMap);
+    },
+
+    removeMap: function(map) {
+      console.log("Removing map");
+      $("#map" + map.attributes.mapDialogRef.model.get("modelNum"))
+        .remove();
     },
 
     // Adds the button to open dialog for defining a new map
