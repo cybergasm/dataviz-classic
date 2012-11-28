@@ -69,6 +69,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         }
       }
 
+      // Making each set a jquery buttonset
       for (var i = 0; i < dataModule.checkboxFieldNames.length; i++) {
         $("#" + dataModule.checkboxFieldNames[i])
           .buttonset();

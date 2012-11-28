@@ -31,8 +31,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       var that = this;
 
       var form = d3.select("#" + this.formId).append("form")
-        .attr("width", 100)
-        .attr("height", 200)
         .append("form");
 
       var fieldName = function(d){ return d;}; // returns name of column in CSV
@@ -62,15 +60,9 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
       binaryBoxes.append("label")
         .text(fieldName)
-        .attr("for", fieldName);
-      
-      binaryBoxes.append("input")
-        .attr("class", "binaryBox")
-        .attr("type", "checkbox")
-        .attr("checked", "true")
-        .attr("id", function(d){ return d + "-no";})
-        .attr("name", function(d){ return d;})
-        .on("click", function(d) { clickBox(this);});
+        .attr("for", function(d) {
+          return d + "-yes"
+        });
       binaryBoxes.append("input")
         .attr("class", "binaryBox")
         .attr("type", "checkbox")
@@ -78,6 +70,37 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .attr("id", function(d){ return d + "-yes";})
         .attr("name", function(d){ return d;})
         .on("click", function(d) { clickBox(this);});
+
+      binaryBoxes.append("label")
+        .text(function(d) {
+          return "No " + d;
+        })
+        .attr("for", function(d) {
+          return d + "-no";
+        });
+      binaryBoxes.append("input")
+        .attr("class", "binaryBox")
+        .attr("type", "checkbox")
+        .attr("checked", "true")
+        .attr("id", function(d){ return d + "-no";})
+        .attr("name", function(d){ return d;})
+        .on("click", function(d) { clickBox(this);});
+      
+      // Make each set of options a jquery buttonset
+      for (var i = 0; i < dataModule.binaryFieldNames.length; i++) {
+        $("#" + dataModule.binaryFieldNames[i])
+          .buttonset();
+      }
+
+      // This goes through each of the labels and figures out which is the 
+      // longest and then sets this width on all of them for uniformity
+      var longest = 0;
+      $(".binaryForm .ui-button").each(function(){
+          if ($(this).width() > longest)
+              longest = $(this).width();
+      }).each(function(){
+          $(this).width(longest);
+      });
     }
 
 });

@@ -45,8 +45,6 @@ svg {
 .binaryForm {
   display: -moz-inline-box;
   display: inline-block;
-  width: 150px;
-  margin-left: 10px;
   vertical-align: top;
   font-family:arial;
   font-size:small;
