@@ -94,6 +94,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
       // This goes through each of the labels and figures out which is the 
       // longest and then sets this width on all of them for uniformity
+      //
+      // From http://stackoverflow.com/questions/9589230/jquery-buttonset-dimension-issues
       var longest = 0;
       $(".binaryForm .ui-button").each(function(){
           if ($(this).width() > longest)
