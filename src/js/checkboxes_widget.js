@@ -54,7 +54,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           .data(curValues)
           .enter()
           .append("label")
-          .attr("for", function(d) { return d; })
+          .attr("for", function(d) { return curOption + "-" + d; })
           .attr("id", function(d) { return d + "-label"; })
           .text(function(d) { return d; });
 
@@ -67,8 +67,12 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
             .attr("id", curOption + "-" + curValues[j])
             .on("click", function() { clickedVal(this); });
         }
-          
-      }  
+      }
+
+      for (var i = 0; i < dataModule.checkboxFieldNames.length; i++) {
+        $("#" + dataModule.checkboxFieldNames[i])
+          .buttonset();
+      }
     }
   });
 
