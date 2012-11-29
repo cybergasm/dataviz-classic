@@ -4,6 +4,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'datatable'],
 
     tableId: "dataTable",
     filteredDataId: "visiblePlaces",
+    scrollId: "tableScroll",
 
     initialize: function(options) {
       _.bindAll(this, 'render', 'getId', 'updateData');

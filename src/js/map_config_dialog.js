@@ -136,7 +136,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         autoOpen: false,
         show: "blind",
         hide: "blind",
-        width: 1280,
+        width: 1350,
         height: "auto",
       });
     },

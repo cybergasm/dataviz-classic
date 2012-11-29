@@ -3,6 +3,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
   var mapWidget = Backbone.View.extend( {
 
     mapId: "map",
+    mapClass: "mapView",
     filteredDataId: "visiblePlaces",
 
     initialize: function(options) {
@@ -38,7 +39,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     },
 
     render: function() {
-      $(this.el).append("<div id=\"" + this.mapId +"\"></div>");
+      $(this.el).append("<div id=\"" + this.mapId +"\" class=\"" + 
+        this.mapClass + "\"></div>");
 
       // Save a reference
       var that = this;

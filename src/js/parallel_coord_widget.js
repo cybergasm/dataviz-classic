@@ -42,7 +42,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Make ourselvs a listener to when the visible places change.
       dataModule.bind("change:" + this.filteredDataId, updateViewWithSelected);
 
-      this.w = 1280 - this.m[1] - this.m[3];
+      this.w = 1080 - this.m[1] - this.m[3];
       this.h = 300 - this.m[0] - this.m[2];
 
       this.x = d3.scale.ordinal().rangePoints([0,this.w], 1);
