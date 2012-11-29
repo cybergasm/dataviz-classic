@@ -71,7 +71,6 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
       this.events['click button#' + this.buttonId] = 'newMap';
 
       $(this.el).append("<ul id=\"" + this.savedMapsId + "\"></ul>");
-      
     },
 
     newMap: function() {

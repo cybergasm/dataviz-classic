@@ -29,7 +29,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
       // Save a reference
       var that = this;
-
       var form = d3.select("#" + this.formId).append("form")
         .append("form");
 
@@ -41,7 +40,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         var fieldId = checkbox.id; // eg. "Demos_no"
         var fieldValue = (fieldId.split("-"))[1]; // "yes" or "no"
         var pastBinarySetting = that.model.get("binaryConfig").get(fieldName);
-
         if (fieldValue == "yes") {
         that.model.get("binaryConfig").set(fieldName, 
           [pastBinarySetting[0],checkbox['checked']]);
@@ -61,13 +59,14 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       binaryBoxes.append("label")
         .text(fieldName)
         .attr("for", function(d) {
-          return d + "-yes"
+          return d + "-yes-" + that.model.get("modelNum");
         });
       binaryBoxes.append("input")
         .attr("class", "binaryBox")
         .attr("type", "checkbox")
         .attr("checked", "true")
-        .attr("id", function(d){ return d + "-yes";})
+        .attr("id", function(d){ return d + "-yes-" + 
+          that.model.get("modelNum");})
         .attr("name", function(d){ return d;})
         .on("click", function(d) { clickBox(this);});
 
@@ -76,13 +75,14 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           return "No " + d;
         })
         .attr("for", function(d) {
-          return d + "-no";
+          return d + "-no-" + that.model.get("modelNum");
         });
       binaryBoxes.append("input")
         .attr("class", "binaryBox")
         .attr("type", "checkbox")
         .attr("checked", "true")
-        .attr("id", function(d){ return d + "-no";})
+        .attr("id", function(d){ return d + "-no-" + 
+          that.model.get("modelNum");})
         .attr("name", function(d){ return d;})
         .on("click", function(d) { clickBox(this);});
       
