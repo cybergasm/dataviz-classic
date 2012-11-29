@@ -5,6 +5,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     mapId: "map",
     mapClass: "mapView",
     filteredDataId: "visiblePlaces",
+    zoomAmount: 500,
 
     initialize: function(options) {
       _.bindAll(this, 'render', 'cloneMap');
@@ -67,7 +68,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .attr("viewBox", "0 0 " + width + " " + height)
         .attr("preserveAspectRatio", "xMidYMid")
         .attr("width", width)
-        .attr("height", height);
+        .attr("height", height)
+        .on("click", siteClick);
 
       var map = mapsvg.append("svg:g").attr("class", "map")
         .attr("transform", "translate(2,3)");
@@ -93,8 +95,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           .attr("transform", function(d) {
             return "translate(" + projection([d.  xcoord,d.ycoord]) + ")";
           })
-          .style("cursor", "pointer")
-          .on("click", siteClick);
+          .style("cursor", "pointer");
 
         that.sites.append("svg:circle")      
           .attr('r', 5)
@@ -113,18 +114,29 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         return path(circle.clip(d));
       }
 
-      function siteClick(clickedPoint) {
-        //var headers = d3.keys(sitesdata[0]);
-        //var returnThis = function(d, i){ return clickedPoint[headers[i]];};
-        //placeBoxDataFields.text(returnThis);
+      function siteClick() {
+        // Get the lat/long from the click location
+        var inverseClick = projection.invert(
+          [d3.mouse(this)[0], d3.mouse(this)[1]]);
+        
+        projection.origin(inverseClick);
 
-        projection.origin([clickedPoint.xcoord, clickedPoint.ycoord]);
-        projection.scale(4500);
-        that.sites.transition().delay(100).duration(500).attr("transform", 
-          function(d) { 
-            return "translate(" + projection([d.xcoord, d.ycoord]) + ")"; 
-          });
-        embossed.transition().delay(100).duration(500).attr("d", clip);
+        var modifier = (d3.event.shiftKey ? -1 : 1);
+
+        projection.scale(projection.scale() + modifier*that.zoomAmount);
+        that.sites
+          .transition()
+          .delay(100)
+          .duration(500)
+          .attr("transform", 
+            function(d) { 
+              return "translate(" + projection([d.xcoord, d.ycoord]) + ")"; 
+            });
+        embossed
+          .transition()
+          .delay(100)
+          .duration(500)
+          .attr("d", clip);
       }
     }
 });
