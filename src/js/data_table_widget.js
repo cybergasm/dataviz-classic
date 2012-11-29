@@ -1,5 +1,5 @@
-define(['backbone', 'jquery-ui', 'd3', 'data_module', 'datatable'], 
-    function(Backbone, $, d3, dataModule, datatable) {
+define(['backbone', 'jquery-ui', 'd3', 'data_module'], 
+    function(Backbone, $, d3, dataModule) {
   var dataTableWidget = Backbone.View.extend( {
 
     tableId: "dataTable",
