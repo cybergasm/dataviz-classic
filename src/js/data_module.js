@@ -178,6 +178,8 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           mapConfigModel.get("checkboxConfig").bind(changeHandler, filterData);
         }
       }
+      this.set("visiblePlaces" + mapConfigModel.get("modelNum"), 
+        this.polisData);
     }  
   });
   

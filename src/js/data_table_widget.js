@@ -1,12 +1,12 @@
-define(['backbone', 'jquery-ui', 'd3', 'data_module'], 
-    function(Backbone, $, d3, dataModule) {
+define(['backbone', 'jquery-ui', 'd3', 'data_module', 'datatable'], 
+    function(Backbone, $, d3, dataModule, datatable) {
   var dataTableWidget = Backbone.View.extend( {
 
     tableId: "dataTable",
     filteredDataId: "visiblePlaces",
 
     initialize: function(options) {
-      _.bindAll(this, 'render', 'getId');
+      _.bindAll(this, 'render', 'getId', 'updateData');
       
       this.el = $(options.parentElem);
 
@@ -15,21 +15,21 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       this.filteredDataId = this.filteredDataId + this.model.get("modelNum");
 
       // Make ourselvs a listener to when the visible places change.
-      dataModule.bind("change:" + this.filteredDataId, updateViewWithSelected);
+      dataModule.bind("change:" + this.filteredDataId, this.updateData);
 
       // Save our data module so we can access it within inner functions  
       this.dataModule = dataModule
 
       var that = this;
 
-      function updateViewWithSelected(){
+      this.columns = [];
 
-        that.rows.style("display", function(d, i) { 
-          // Check if the currently visible places have an entry for this data
-          // point
-          return (dataModule.get(that.filteredDataId)[d['name']] ? null : 
-            "none");
-        });
+      var data = dataModule.get(this.filteredDataId);
+
+      for (var key in data[0]) {
+        if (data[0].hasOwnProperty(key)) {
+          this.columns.push({"mData" : key});
+        }
       }
 
       this.render();
@@ -37,6 +37,21 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
     getId: function() {
       return this.tableId;
+    },
+
+    updateData: function() {
+      this.tableController.fnClearTable();
+      var data = dataModule.get(this.filteredDataId);
+      if (_.size(data) != 0) {
+        // We get the data back through data module's visible places as a
+        // map of city->values. Here we extract the values into an array as 
+        // that is what DataTable expects.
+        var dataForTable = [];
+        for (var city in data) {
+          dataForTable.push(data[city])
+        }
+        this.tableController.fnAddData(dataForTable)
+      }
     },
 
     render: function() {
@@ -48,8 +63,11 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Table code based on sample from: http://jsfiddle.net/7WQjr/
       var columns = dataModule.allFieldNames;
 
-      var table = d3.select("#" + this.tableId).append("table"),
-        thead = table.append("thead"),
+      var table = d3.select("#" + this.tableId)
+        .append("table")
+        .attr("id", this.tableId + "-table");
+
+      var thead = table.append("thead"),
         tbody = table.append("tbody");
 
       thead.append("tr")
@@ -58,24 +76,14 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .enter()
         .append("th")
         .text(function(column) { return column; });
+        
+      this.tableController = $("#" + this.tableId + "-table")
+        .dataTable({
+          "aoColumns" : this.columns,
+        });
 
-      //creates a row for each object in data
-      this.rows = tbody.selectAll("tr")
-        .data(dataModule.polisData)
-        .enter()
-        .append("tr")
-        .style("display", null);
-
-      //creates a cell for each column in each row
-      cells = this.rows.selectAll("td")
-        .data(function(row) {
-          return columns.map(function(column) {
-            return {column: column, value: row[column]};
-          });
-        })
-        .enter()
-        .append("td")
-          .text(function(d) { return d.value; });
+      // Initially we want all the data
+      this.tableController.fnAddData(dataModule.polisData);
     }
 });
 
