@@ -6,6 +6,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
   
   var PATHS = {
     "polisData" : "../../data/polis_10_12.csv",
+    "peopleData" : "../../data/people_full.csv",
   };
 
   var dataModel = Backbone.Model.extend({
