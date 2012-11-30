@@ -6,6 +6,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
   
   var PATHS = {
     "polisData" : "../../data/polis_10_12.csv",
+    "peopleData" : "../../data/people_full.csv",
   };
 
   var dataModel = Backbone.Model.extend({
@@ -18,6 +19,8 @@ define(['backbone', 'd3'], function (Backbone, d3) {
       // This will be called after all data has been loaded to give us a 
       // chance to do any extra processing
       function processData() {
+        // POLIS DATA
+
         var headers = d3.keys(that.polisData[0]);
 
         // Generate array of headers that correspond to data in parallel form
@@ -27,7 +30,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           return that.polisData[0][d] == "binary";});
         that.checkboxFieldNames = headers.filter(function(d) {
           return that.polisData[0][d] == "checkbox";});
-        
+
         // Get set of possible values for every checkbox field name
         that.checkboxFieldValues  = {};
 
@@ -41,6 +44,9 @@ define(['backbone', 'd3'], function (Backbone, d3) {
 
         // Gets rid of the header rows
         that.polisData.splice(0,2);
+
+        // PEOPLE DATA
+
       }
 
       for (var path in PATHS) {
@@ -161,12 +167,16 @@ define(['backbone', 'd3'], function (Backbone, d3) {
       for (var i = 0; i < this.parallelFieldNames.length; i++) {
         mapConfigModel.get("parallelConfig").bind(
           "change:" + this.parallelFieldNames[i], filterData);
+        mapConfigModel.get("parallelConfig").bind(
+          "change:" + this.parallelFieldNames[i], updateStateString);
       }
 
       // Register to listen to updates of binary fields
       for (var i = 0; i < this.binaryFieldNames.length; i++) {
         mapConfigModel.get("binaryConfig").bind(
           "change:" + this.binaryFieldNames[i], filterData);
+        mapConfigModel.get("binaryConfig").bind(
+          "change:" + this.binaryFieldNames[i], updateStateString);
       }
 
       // Listen to changes in checkbox values
@@ -176,10 +186,56 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         for (var j = 0; j < values.length; j++) {
           var changeHandler = "change:" + name + "-" + values[j];
           mapConfigModel.get("checkboxConfig").bind(changeHandler, filterData);
+          mapConfigModel.get("checkboxConfig")
+            .bind(changeHandler, updateStateString);
         }
       }
+
       this.set("visiblePlaces" + mapConfigModel.get("modelNum"), 
         this.polisData);
+   
+      // When a change occurs, generates a new string representation of the
+      // current state of the program.
+      function updateStateString() {
+        var myStateString = "";
+
+        // Check binary fields
+        for(var i = 0; i < that.binaryFieldNames.length; i++) {
+          var bFieldName = that.binaryFieldNames[i];
+          var curBinaryField = 
+            mapConfigModel.get("binaryConfig").get(bFieldName);
+          if(curBinaryField[0] != true || curBinaryField[1] != true) {
+            myStateString = myStateString + bFieldName + "=" + 
+              curBinaryField[0] + "-" + curBinaryField[1] + ",";
+          }
+        }
+
+        // Check checkbox fields
+        for(var i = 0; i < that.checkboxFieldNames.length; i++) {
+          var cFieldName = that.checkboxFieldNames[i];
+          var values = that.checkboxFieldValues[cFieldName];
+          for (var j = 0; j < values.length; j++) {
+            if(mapConfigModel.get("checkboxConfig").get(cFieldName 
+              + "-" + values[j]) 
+              == false) {
+              myStateString = myStateString + cFieldName + "-" + 
+                values[j] + "=false,";
+            }
+          }
+        }
+
+        // Check parallel fields
+        for(var i = 0; i < that.parallelFieldNames.length; i++) {
+          var pFieldName = that.parallelFieldNames[i];
+          var pField = mapConfigModel.get("parallelConfig").get(pFieldName);
+          var fieldMin = Math.round(pField.min * 100) / 100; // 2 decimal places
+          var fieldMax = Math.round(pField.max * 100) / 100; // 2 decimal places
+          myStateString = myStateString + pFieldName + "=" + fieldMin + 
+            "-" + fieldMax + ",";
+        }
+
+        console.log(myStateString);
+      } 
     }  
   });
   

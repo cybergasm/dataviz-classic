@@ -49,7 +49,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       for (var i = 0; i < dataModule.checkboxFieldNames.length; i++) {
         var curOption = dataModule.checkboxFieldNames[i];
         var curValues = dataModule.checkboxFieldValues[curOption];
-        var curDiv = form.filter(function(d, i) { return d == curOption});
+        var curDiv = form.filter(function(d, i) { return d == curOption });
 
         // Append a label for every option of the checkboxes
         curDiv.selectAll("label")

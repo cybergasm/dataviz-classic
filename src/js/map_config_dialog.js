@@ -12,7 +12,9 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
     
     elId: "map-config-dialog",
     saveId: "save",
+    loadId: "load",
     tabsId: "option-tabs",
+    stringRepId: "string-rep",
     tabsContentList: "tabs-list",
     configurationCollectionEntry: null,
 
@@ -20,8 +22,8 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
 
     initialize: function(options) {
       // This allows the enumerated methods to refer to this object
-      _.bindAll(this, 'render', 'openDialog', 'saveMap', 'renderOptionWidgets',
-        'getMapPic');
+      _.bindAll(this, 'render', 'openDialog', 'saveMap', 'reloadMapFromString', 
+        'renderOptionWidgets', 'getMapPic');
       this.el = $(options.parentElem);
 
       // Creates a model for this configuration
@@ -51,6 +53,37 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       mapComparisonModelEditor.collection.add(
         this.configurationCollectionEntry);
       $("#" + this.elId).dialog("close");
+    },
+
+    // Parses the parameters in stateString and sets the data model to the
+    // parameters in the string so the map will refresh according to the
+    // string
+    reloadMapFromString: function(stateString) {
+      var myFields = stateString.split(',');
+      for (var i = 0; i < myFields.length; i++) {
+        var fieldData = myFields[i].split('=');
+        var currentFieldName = fieldData[0];
+        var currentFieldValues = fieldData[1];
+
+        // Check to see what type the field is, then update the data model
+        // to reflect the value of the field
+        if(that.parallelFieldNames.indexOf(currentFieldName) != -1) { 
+          var minAndMaxValues = currentFieldValues.split('-');
+          this.model.get("parallelConfig").set(currentFieldName , {
+            min:minAndMaxValues[0],
+            max:minAndMaxValues[1]
+          })
+        } else if(that.binaryFieldNames.indexOf(currentFieldName) != -1) {
+          var yesAndNoValues = currentFieldValues.split('-');
+          this.model.get("binaryConfig").set(currentFieldName, 
+            [yesAndNoValues[0] == "true", yesAndNoValues[1] == "true"]);
+        } else if(currentFieldName.indexOf("-") != -1 &&
+            that.checkboxFieldNames.indexOf((currentFieldName.split('-'))[0]) 
+            != -1) {
+          var valueToSet = (currentFieldValues == "true");
+          this.model.get("checkboxConfig").set(currentFieldName, valueToSet);
+        }
+      }
     },
 
     // This function adds specified widgets to the view and adds an entry for
@@ -108,6 +141,25 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
           that.saveMap();
         });
 
+      // Append a text field to store the string representation of the map
+      $("#" + this.elId, this.el)
+        .append("<textarea rows=\"1\" cols=\"80\" id=\"" + this.stringRepId 
+          + "\"></textarea>");
+
+      $("#" + this.stringRepId, this.el)
+        .val("hello");
+
+      // Append a button to refresh the map from a URL
+
+      $("#" + this.elId, this.el)
+        .append("<button id=\"" + this.loadId + "\">Load</button>");
+
+      $("#" + this.loadId, this.el)
+        .button()
+        .click(function() {
+          that.reloadMapFromString("Constitution-Dem=false,Constitution-Pol=false,Constitution-NR=false,");
+        });
+
       // Draws the map
       this.mapWidget = mapWidgetFactory("#" + this.elId, this.model);
       
@@ -120,7 +172,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
 
       // Render the widgets and add each to the list that creates tabs
       this.renderOptionWidgets();
-      
+
       // Tell JQuery to create the tab view
       $("#" + this.tabsId, this.el)
         .tabs();

@@ -1,7 +1,7 @@
 // This is the model for the configuration of a map view. It stores all the 
 // parameters a user could wish to change.
 define(['backbone', 'data_module'], function(Backbone, dataModule) {
-  
+
   var binaryConfigModel = Backbone.Model.extend({
 
     initialize: function() {
