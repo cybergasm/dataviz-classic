@@ -1,4 +1,4 @@
-define(['backbone', 'jquery-ui', 'd3', 'data_module'], 
+define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'], 
     function(Backbone, $, d3, dataModule) {
   var mapWidget = Backbone.View.extend( {
 
@@ -82,8 +82,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           .enter().append("svg:path")
           .attr("d", clip)
           .attr("class", "countries")
-          .style("fill", "black")
-          .style("stroke", "#638a8a")
+          .style("fill", "#E8E8E8")
+          .style("stroke", "#C4C2C3")
           .style("stroke-width", 4);
 
         // Save sites so we can chage what is visible later
@@ -98,9 +98,9 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           .style("cursor", "pointer");
 
         that.sites.append("svg:circle")      
-          .attr('r', 5)
+          .attr('r', 7)
           .attr("class", "sites")
-          .style("fill", "red")
+          .style("fill", "807E7F")
           .style("stroke", "grey")
           .style("opacity", 0)
           .transition()
@@ -108,7 +108,21 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           .duration(1000)
           .style("opacity", .85);
 
+        $('svg circle').tipsy({
+          gravity: 'sw',
+          html: true,
+          title: function() {
+            var info = "<span>";
+            for (var key in this.__data__) {
+              if (this.__data__.hasOwnProperty(key)) {
+                info += "<p>" + key + ": " + this.__data__[key];
+              }
+            }
+            info += "</span>"
+            return info;
+          }
         });
+      });
 
       function clip(d) {
         return path(circle.clip(d));

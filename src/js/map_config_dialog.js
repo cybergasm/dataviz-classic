@@ -2,10 +2,10 @@
 // associated to creating a map-view over our data.
 define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 
   'checkboxes_widget', 'map_widget', 'data_module', 'map_config_model', 
-  'data_box_widget', 'data_table_widget', 'map_comparison_model'], 
+  'data_table_widget', 'map_comparison_model'], 
     function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, 
       checkboxesWidgetFactory, mapWidgetFactory, dataModule, 
-      mapConfigModelFactory, dataBoxWidgetFactory, dataTableWidgetFactory,
+      mapConfigModelFactory, dataTableWidgetFactory,
       mapComparisonModelEditor) {
   
     var dialogView = Backbone.View.extend( {
@@ -81,12 +81,6 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.dataTableWidget.getId() + "\">" +
           "Table of Cities</a></li>");
-
-      this.dataBoxWidget = dataBoxWidgetFactory("#" + this.tabsId,
-        this.model);
-      $("#" + this.tabsContentList, this.el)
-        .append("<li><a href=\"#" + this.dataBoxWidget.getId() + "\">" +
-          "Data Box</a></li>");
     },
 
     // Adds a dialog div and configures it to be hidden.

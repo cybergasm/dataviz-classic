@@ -9,7 +9,8 @@ require.config({
     "backbone": "external/backbone",
     "d3": "external/d3.v2",
     "dc": "external/dc",
-    "datatable" : "external/datatable/js/jquery.dataTables"
+    "datatable" : "external/datatable/js/jquery.dataTables",
+    "tipsy" : "external/jquery.tipsy",
   },
   // This allows us to order the loading order of our scripts since a lot of
   // our utilities have dependendencies that need to be loaded before they are.
@@ -39,6 +40,9 @@ require.config({
     },
     "datatable" : {
       exports: ["datatable"],
+      deps: ["jquery"]
+    },
+    "tipsy" : {
       deps: ["jquery"]
     }
   }
