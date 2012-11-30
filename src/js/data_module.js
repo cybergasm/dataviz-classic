@@ -50,19 +50,25 @@ define(['backbone', 'd3'], function (Backbone, d3) {
       }
 
       for (var path in PATHS) {
-        d3.csv(PATHS[path], function(csv) {
-          pathsToLoad--;
-
-          // Set this CSV as member with name equal to the key pointing to the
-          // path of this file. Then check if we've loaded everything, if so,
-          // call the given callback after pulling out any extreneous data we
-          // we need.
-          that[path] = csv;
-          if (pathsToLoad == 0) {
-            processData();
-            callback();
+        // Javascript wizardy incoming. Since we are in a loop the path in the
+        // inner function will always be the last iteration due to the closure
+        // variable being overwritten by the loop. SO we execute a function 
+        // takes the current path and returns a function which takes a csv to
+        // save the path at time of iteration in a new closure.
+        d3.csv(PATHS[path], (function(loadedPath) {
+          return function(csv) {
+            pathsToLoad--;
+            // Set this CSV as member with name equal to the key pointing to the
+            // path of this file. Then check if we've loaded everything, if so,
+            // call the given callback after pulling out any extreneous data we
+            // we need.
+            that[loadedPath] = csv;
+            if (pathsToLoad == 0) {
+              processData();
+              callback();
+            }
           }
-        });  
+        }) (path));  
       }
     }, 
 
