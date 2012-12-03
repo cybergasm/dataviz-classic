@@ -6,7 +6,8 @@ define(['backbone', 'd3'], function (Backbone, d3) {
   
   var PATHS = {
     "polisData" : "../../data/polis_10_12.csv",
-    "peopleData" : "../../data/people_full.csv",
+    "peopleData" : "../../data/people_full_1.csv",
+    "endeavorData" : "../../data/endeavor_categories.csv",
   };
 
   var dataModel = Backbone.Model.extend({
@@ -45,9 +46,48 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         // Gets rid of the header rows
         that.polisData.splice(0,2);
 
-        // PEOPLE DATA
+        // ENDEAVOR DATA
 
-      }
+        // Generates a mapping from endeavor code to endeavor name and endeavor
+        // category
+        var endeavorInformation = {};
+        for(var i = 0; i < that.endeavorData.length; i++) {
+          var info = new Array();
+          info['name'] = that.endeavorData[i]['name'];
+          info['category'] = that.endeavorData[i]['category'];
+          endeavorInformation[that.endeavorData[i]['id']] = info;
+        }
+        // PEOPLE DATA
+        var peopleHeaders = d3.keys(that.peopleData[0]);
+
+        // Generate arrays of headers that correspond to data in each form
+        that.textFieldNames = peopleHeaders.filter(function(d) { 
+          return that.peopleData[0][d] == "textbox";});
+        that.optionFieldNames = peopleHeaders.filter(function(d) { 
+          return that.peopleData[0][d] == "optionbox";});
+        that.peopleParallelNames = peopleHeaders.filter(function(d) { 
+          return that.peopleData[0][d] == "parallel";});
+        that.peopleBinaryNames = peopleHeaders.filter(function(d) { 
+          return that.peopleData[0][d] == "binary";});
+
+        // Gets rid of the header rows
+        that.peopleData.splice(0,1);
+
+        // Generate a list of all possible values for option box
+        for(var i = 0; i < that.peopleData.length; i++) {
+          var endeavorCodes = that.peopleData[i]['Endeavor_codes'];
+          var endeavorCodesArr = (endeavorCodes).split(",");        
+          var endeavorNames = [];
+          for(var j = 0; j < endeavorCodesArr.length; j++) {
+            var currentCode = endeavorCodesArr[j];
+            if(currentCode in endeavorInformation) {
+              endeavorNames.push(endeavorInformation[currentCode]['name']);  
+            }
+          }
+          that.peopleData[i]['Endeavors'] = endeavorNames;
+        }
+
+      } 
 
       for (var path in PATHS) {
         // Javascript wizardy incoming. Since we are in a loop the path in the
