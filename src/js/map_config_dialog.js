@@ -2,11 +2,13 @@
 // associated to creating a map-view over our data.
 define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 
   'checkboxes_widget', 'map_widget', 'data_module', 'map_config_model', 
-  'data_table_widget', 'export_widget', 'map_comparison_model'], 
+  'data_table_widget', 'export_widget', 'map_comparison_model', 
+  'people_binary_boxes_widget', 'people_config_model'], 
     function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, 
       checkboxesWidgetFactory, mapWidgetFactory, dataModule, 
       mapConfigModelFactory, dataTableWidgetFactory, exportWidgetFactory,
-      mapComparisonModelEditor) {
+      mapComparisonModelEditor, peopleBinaryBoxesWidgetFactory, 
+      peopleConfigModelFactory) {
   
     var dialogView = Backbone.View.extend( {
     
@@ -30,11 +32,14 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       // Creates a model for this configuration
       this.model = mapConfigModelFactory(
         mapComparisonModelEditor.collection.length);
+      this.peopleModel = peopleConfigModelFactory(
+        mapComparisonModelEditor.collection.length);
       
       this.dataModule = dataModule;
 
       // Makes the data model listen to changes to our configuration
       dataModule.listenToMapConfig(this.model);
+      dataModule.listenToPeopleConfig(this.peopleModel);
 
       this.render();
     },
@@ -126,6 +131,12 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.exportWidget.getId() + "\">" +
           "Export</a></li>");
+
+      this.peopleBinaryBoxesWidget = peopleBinaryBoxesWidgetFactory("#" + 
+        this.tabsId, this.peopleModel);
+      $("#" + this.tabsContentList, this.el)
+        .append("<li><a href=\"#" + this.peopleBinaryBoxesWidget.getId() + 
+          "\">" + "People Toggle</a></li>");
     },
 
     // Adds a dialog div and configures it to be hidden.

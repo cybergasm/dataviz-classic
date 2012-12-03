@@ -63,17 +63,28 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         // Generate arrays of headers that correspond to data in each form
         that.textFieldNames = peopleHeaders.filter(function(d) { 
           return that.peopleData[0][d] == "textbox";});
-        that.optionFieldNames = peopleHeaders.filter(function(d) { 
+        that.peopleCheckboxFieldNames = peopleHeaders.filter(function(d) { 
           return that.peopleData[0][d] == "optionbox";});
-        that.peopleParallelNames = peopleHeaders.filter(function(d) { 
+        that.peopleParallelFieldNames = peopleHeaders.filter(function(d) { 
           return that.peopleData[0][d] == "parallel";});
-        that.peopleBinaryNames = peopleHeaders.filter(function(d) { 
+        that.peopleBinaryFieldNames = peopleHeaders.filter(function(d) { 
           return that.peopleData[0][d] == "binary";});
 
-        // Gets rid of the header rows
-        that.peopleData.splice(0,1);
+        // Get set of possible values for every checkbox field name
+        that.peopleCheckboxFieldValues  = {};
 
-        // Generate a list of all possible values for option box
+        for (var i = 0; i < that.peopleCheckboxFieldNames.length; i++) {
+          var curName = that.peopleCheckboxFieldNames[i];
+          that.peopleCheckboxFieldValues[curName] = 
+            that.peopleData[1][curName].split(',');
+        }
+
+        // Gets rid of the header rows
+        that.peopleData.splice(0,2);
+
+        that.allPeopleFieldNames = peopleHeaders;
+
+        // Add the "endeavors" as text values to the people data
         for(var i = 0; i < that.peopleData.length; i++) {
           var endeavorCodes = that.peopleData[i]['Endeavor_codes'];
           var endeavorCodesArr = (endeavorCodes).split(",");        
@@ -86,6 +97,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           }
           that.peopleData[i]['Endeavors'] = endeavorNames;
         }
+
 
       } 
 
@@ -111,6 +123,113 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         }) (path));  
       }
     }, 
+
+    // Given a people configuration model, sets itself up to listen to changes
+    // to this model in order to filter data in response to new state.    
+    listenToPeopleConfig: function(peopleConfigModel) {
+
+      var that = this;
+
+      // For a given site toCheck that is passed in as a parameter, returns 
+      // true if the site should be visible and false if the site should be 
+      // invisible. 
+      function personIsVisible(toCheck) {
+
+        //Check parallel coordinate fields
+        for(var i = 0; i < that.peopleParallelFieldNames.length; i++) {
+          var pField = that.peopleParallelFieldNames[i];
+          var curField = peopleConfigModel.get("peopleParallelConfig").get(pField);
+          fieldMax = curField.max;
+          fieldMin = curField.min;
+          if(toCheck[pField] < fieldMin || toCheck[pField] > fieldMax) {
+            return false;
+          }
+        }
+
+        //Check binary fields
+        for(var i = 0; i < that.peopleBinaryFieldNames.length; i++) {
+          var bField = that.peopleBinaryFieldNames[i];
+          var curBinaryField = peopleConfigModel.get("peopleBinaryConfig").get(bField);
+          var noFieldSetting = curBinaryField[0];
+          var yesFieldSetting = curBinaryField[1];
+          var toCheckValue = toCheck[bField];
+
+          if(yesFieldSetting == true) {
+            // 0 is off and 1 is on, return false if toCheckValue == 0
+            // otherwise 0 is on and 1 is on, do not need to filter on this 
+            // field
+            if(noFieldSetting == false) {
+              if(toCheckValue == 0) {
+                return false;
+              } 
+            }
+          } else {
+            // both 0 and 1 are off, return false if toCheckValue == 1
+            if(noFieldSetting == false) {
+              return false;
+            }
+            // 0 is on and 1 is off, return false if toCheckValue == 1
+            if(toCheckValue == 1) {
+              return false;
+            } 
+          }
+        }
+
+        // Check the checkbox values by going through every name and category
+        // and checking if it is checked by user and if it is in the data for
+        // this city. If any of the associated values with the city are checked
+        // we return true.        
+        for (var i = 0; i < that.peopleCheckboxFieldNames.length; i++) {
+          var name = that.peopleCheckboxFieldNames[i];
+          var valuesInData = toCheck[name];
+        
+          var values = that.peopleCheckboxFieldValues[name];
+          var containsCheckBox = false;
+
+          // Go through all the possible values, query the model, and check if
+          // (1) the value is checked and (2) if the values string contains it 
+          // in the data.
+          for (var j = 0; j < values.length; j++) {
+            var selected = peopleConfigModel.get("peopleCheckboxConfig").get(
+              name + "-" + values[j]);
+            var setInData = valuesInData.indexOf(values[j]) > -1;
+            
+            if (setInData && selected) {
+              // One of the checked values is in the data
+              containsCheckBox = true;
+            }
+          }
+          if (!containsCheckBox) {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      // When we've heard a change, go through data and see which people are
+      // visible under current constraints. Then set them to the currently 
+      // visible variable.
+      function filterPeopleData() {
+        var visiblePeople = {};
+        for (var i = 0; i < that.peopleData.length; i++) {
+          if (personIsVisible (that.peopleData[i])) {
+            visiblePeople[that.peopleData[i].unique_id] = that.peopleData[i];
+          }
+        }
+        that.set("visiblePeople" + peopleConfigModel.get("modelNum"), 
+          visiblePeople);
+        console.log(visiblePeople);
+      }
+
+      // Register to listen to changes in person configuration
+      peopleConfigModel.listenToPeopleConfigChanges(filterPeopleData);
+
+      // Set the visible places to the whole data set.
+      this.set("visiblePeople" + peopleConfigModel.get("modelNum"), 
+        this.peopleData);
+
+    },   
 
     // Given a map configuration model, sets itself up to listen to changes
     // to this model in order to filter data in response to new state.
