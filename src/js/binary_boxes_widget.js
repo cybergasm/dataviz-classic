@@ -16,6 +16,37 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Save our data module so we can access it within inner functions  
       this.dataModule = dataModule;
 
+      // Register for changes to the binary configuration data that could 
+      // could result from, for example, a map being loaded. This updates the
+      // UI to reflect the loaded data
+      var that = this;
+
+      function updateConfigUI() {
+        var binaryOptions = that.dataModule.binaryFieldNames;
+        for (var i = 0; i < binaryOptions.length; i++) {
+          var value = that.model.get("binaryConfig").get(binaryOptions[i]);
+          var yesId = "#" + binaryOptions[i] + "-yes-" + 
+            that.model.get("modelNum");
+          var noId = "#" + binaryOptions[i] + "-no-" + 
+            that.model.get("modelNum");
+          // Update the 'yes' option of this field to the second parameter and
+          // the 'no' option to the first. The refresh code forces the UI to 
+          // update.
+          $(yesId)
+            .prop({checked: value[1]});
+          $(yesId)
+            .button("enable")
+            .button("refresh");
+          $(noId)
+            .prop({checked: value[0]});
+          $(noId)
+            .button("enable")
+            .button("refresh");
+        }
+      }
+
+      this.model.listenToMapBinaryChanges(updateConfigUI);
+
       this.render();
     },
 

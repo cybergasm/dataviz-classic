@@ -17,6 +17,32 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Save our data module so we can access it within inner functions  
       this.dataModule = dataModule;
       
+      // Register for changes to the checkbox configuration data that could 
+      // could result from, for example, a map being loaded. This updates the
+      // UI to reflect the loaded data
+      var that = this;
+
+      function updateConfigUI() {
+        // Go through each set of options
+        var fieldSets = that.dataModule.checkboxFieldNames;
+        for (var i = 0; i < fieldSets.length; i++) {
+          var curOption = fieldSets[i];
+          var curValues = that.dataModule.checkboxFieldValues[curOption];
+
+          for (var j = 0; j < curValues.length; j++) {
+            var attrId = curOption + "-" + curValues[j];
+            var curId = "#" +  attrId + "-" + that.model.get("modelNum");
+            $(curId)
+              .prop("checked", that.model.get("checkboxConfig").get(attrId));
+            $(curId)
+              .button("enable")
+              .button("refresh");
+          }
+        }
+      }
+
+      this.model.listenToMapCheckboxChanges(updateConfigUI);
+
       this.render()
     },
 
