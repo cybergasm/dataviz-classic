@@ -16,6 +16,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
     tabsId: "option-tabs",
     stringRepId: "string-rep",
     tabsContentList: "tabs-list",
+    controlId: "controlbox",
     configurationCollectionEntry: null,
 
     events: {},
@@ -142,9 +143,11 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       // Append the div that holds the elements for the dialog
       $(this.el)
         .append("<div id=\"" + this.elId + "\"></div>");
-      
-      // Append a button for saving and register functionality
       $("#" + this.elId, this.el)
+        .append("<div id=\"" + this.controlId + "\"></div>");
+
+      // Append a button for saving and register functionality
+      $("#" + this.controlId, this.el)
         .append("<button id=\"" + this.saveId + "\">Save</button>");
 
       $("#" + this.saveId, this.el)
@@ -154,17 +157,16 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         });
 
       // Append a text field to store the string representation of the map
-      $("#" + this.elId, this.el)
+      $("#" + this.controlId, this.el)
         .append("<textarea rows=\"2\" cols=\"80\" id=\"" + this.stringRepId 
           + "\"></textarea>");
       $("#" + this.stringRepId, this.el)
-        .attr("class", "ui-widget ui-state-default ui-corner-all");
+        .attr("class", "loadBox ui-widget ui-state-default ui-corner-all");
       $("#" + this.stringRepId, this.el)
         .val("hello");
 
       // Append a button to refresh the map from a URL
-
-      $("#" + this.elId, this.el)
+      $("#" + this.controlId, this.el)
         .append("<button id=\"" + this.loadId + "\">Load</button>");
 
       $("#" + this.loadId, this.el)

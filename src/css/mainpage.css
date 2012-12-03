@@ -60,6 +60,15 @@ svg {
   width:800;
   overflow:auto;
 }
+
+.loadBox {
+  position:relative;
+  top:20px;
+}
+
+#controlbox {
+  margin-bottom:10px;
+}
 /*#main {
   border:2px solid gray;
   margin:0 auto;
