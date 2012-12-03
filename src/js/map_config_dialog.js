@@ -2,10 +2,10 @@
 // associated to creating a map-view over our data.
 define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 
   'checkboxes_widget', 'map_widget', 'data_module', 'map_config_model', 
-  'data_table_widget', 'map_comparison_model'], 
+  'data_table_widget', 'export_widget', 'map_comparison_model'], 
     function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, 
       checkboxesWidgetFactory, mapWidgetFactory, dataModule, 
-      mapConfigModelFactory, dataTableWidgetFactory,
+      mapConfigModelFactory, dataTableWidgetFactory, exportWidgetFactory,
       mapComparisonModelEditor) {
   
     var dialogView = Backbone.View.extend( {
@@ -114,6 +114,11 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.dataTableWidget.getId() + "\">" +
           "Table of Cities</a></li>");
+
+      this.exportWidget = exportWidgetFactory("#" + this.tabsId, this.model);
+      $("#" + this.tabsContentList, this.el)
+        .append("<li><a href=\"#" + this.exportWidget.getId() + "\">" +
+          "Export</a></li>");
     },
 
     // Adds a dialog div and configures it to be hidden.
@@ -143,9 +148,10 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
 
       // Append a text field to store the string representation of the map
       $("#" + this.elId, this.el)
-        .append("<textarea rows=\"1\" cols=\"80\" id=\"" + this.stringRepId 
+        .append("<textarea rows=\"2\" cols=\"80\" id=\"" + this.stringRepId 
           + "\"></textarea>");
-
+      $("#" + this.stringRepId, this.el)
+        .attr("class", "ui-widget ui-state-default ui-corner-all");
       $("#" + this.stringRepId, this.el)
         .val("hello");
 

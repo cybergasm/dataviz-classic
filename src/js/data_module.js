@@ -257,7 +257,6 @@ define(['backbone', 'd3'], function (Backbone, d3) {
             "-" + fieldMax + ",";
         }
 
-        console.log(myStateString);
         mapConfigModel.set("stateString", myStateString);
       } 
     }  
