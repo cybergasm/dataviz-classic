@@ -70,8 +70,8 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         if(that.parallelFieldNames.indexOf(currentFieldName) != -1) { 
           var minAndMaxValues = currentFieldValues.split('-');
           this.model.get("parallelConfig").set(currentFieldName , {
-            min:minAndMaxValues[0],
-            max:minAndMaxValues[1]
+            min:parseFloat(minAndMaxValues[0]),
+            max:parseFloat(minAndMaxValues[1])
           })
         } else if(that.binaryFieldNames.indexOf(currentFieldName) != -1) {
           var yesAndNoValues = currentFieldValues.split('-');
