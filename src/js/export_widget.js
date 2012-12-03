@@ -12,6 +12,8 @@ define(['backbone', 'jquery-ui', 'data_module'],
       this.el = $(options.parent);
       this.model = options.model;
 
+      this.textAreaId = this.textAreaId + this.model.get("modelNum");
+
       var that = this;
 
       function updateExportString() {

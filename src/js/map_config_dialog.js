@@ -82,6 +82,12 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
             != -1) {
           var valueToSet = (currentFieldValues == "true");
           this.model.get("checkboxConfig").set(currentFieldName, valueToSet);
+        } else if(currentFieldName == "map-scale") {
+          this.model.set("map-scale", parseFloat(currentFieldValues));
+        } else if(currentFieldName == "map-origin") {
+          var origin = currentFieldValues.split('-');
+          this.model.set("map-origin", 
+            [parseFloat(origin[0]), parseFloat(origin[1])]);
         }
       }
     },
@@ -126,6 +132,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       var that = this;
 
       this.elId = this.elId + mapComparisonModelEditor.collection.length;
+      this.saveMap = this.saveMap + mapComparisonModelEditor.collection.length;
 
       // Check if this dialog is already made.
       if ($("#" + this.elId).length != 0) {
@@ -164,7 +171,6 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         .button()
         .click(function() {
           var string = $("#" + that.stringRepId).val();
-          console.log(string);
           that.reloadMapFromString(string);
         });
 

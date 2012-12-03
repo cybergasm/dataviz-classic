@@ -212,6 +212,8 @@ define(['backbone', 'd3'], function (Backbone, d3) {
       // Register to listen to changes in place configuration
       mapConfigModel.listenToMapConfigChanges(filterData);
       mapConfigModel.listenToMapConfigChanges(updateStateString);
+      mapConfigModel.bind("change:map-origin", updateStateString);
+      mapConfigModel.bind("change:map-scale", updateStateString);
 
       // Set the visible places to the whole data set.
       this.set("visiblePlaces" + mapConfigModel.get("modelNum"), 
@@ -255,6 +257,17 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           var fieldMax = Math.round(pField.max * 100) / 100; // 2 decimal places
           myStateString = myStateString + pFieldName + "=" + fieldMin + 
             "-" + fieldMax + ",";
+        }
+
+        var mapOrigin = mapConfigModel.get("map-origin");
+        if (mapOrigin != undefined) {
+          myStateString += "map-origin=" + mapOrigin[0] + "-" + mapOrigin[1] 
+            + ",";
+        }
+
+        var mapScale = mapConfigModel.get("map-scale");
+        if (mapScale != undefined) {
+          myStateString += "map-scale=" + mapScale + ",";
         }
 
         mapConfigModel.set("stateString", myStateString);

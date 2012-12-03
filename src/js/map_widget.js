@@ -6,13 +6,16 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     mapClass: "mapView",
     filteredDataId: "visiblePlaces",
     zoomAmount: 500,
+    initOrigin:[22.8, 38.6],
+    initScale:2500,
 
     initialize: function(options) {
-      _.bindAll(this, 'render', 'cloneMap');
+      _.bindAll(this, 'render', 'cloneMap', 'clip', 'moveMap');
       
       this.el = $(options.parentElem);
 
       this.dataModule = dataModule;
+      this.model = options.model;
 
       var that = this;  
 
@@ -29,6 +32,13 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
 
       // Make ourselvs a listener to when the visible places change.
       dataModule.bind("change:" + this.filteredDataId, updateVisiblePlaces);
+
+      this.model.set("map-scale", this.initScale);
+      this.model.set("map-origin", this.initOrigin);
+      
+      // Make ourselves listeners of the map position attributes
+      this.model.bind("change:map-scale", this.moveMap);
+      this.model.bind("change:map-origin", this.moveMap);
 
       this.render();
     },
@@ -51,17 +61,11 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
 
       var rankRamp = d3.scale.linear().domain([0,.005]).range([1,10]).clamp(true);
 
-      var projection = d3.geo.azimuthal()
-        .scale(2500)
-        .origin([22.8,38.6])
+      this.projection = d3.geo.azimuthal()
+        .scale(this.initScale)
+        .origin(this.initOrigin)
         .mode("orthographic")
         .translate([640, 400]);
-
-      var circle = d3.geo.greatCircle()
-        .origin(projection.origin());
-
-      var path = d3.geo.path()
-        .projection(projection);
 
       var mapsvg = d3.select("#" + this.mapId).append("svg:svg")
         // The following two attributes allow the map to later be resized.
@@ -80,7 +84,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         embossed = map.selectAll("path.countries")
           .data(collection.features)
           .enter().append("svg:path")
-          .attr("d", clip)
+          .attr("d", that.clip)
           .attr("class", "countries")
           .style("fill", "#E8E8E8")
           .style("stroke", "#C4C2C3")
@@ -93,7 +97,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
           .append("svg:g")
           .attr("class", "foreground")
           .attr("transform", function(d) {
-            return "translate(" + projection([d.  xcoord,d.ycoord]) + ")";
+            return "translate(" + that.projection([d.  xcoord,d.ycoord]) + ")";
           })
           .style("cursor", "pointer");
 
@@ -124,34 +128,51 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         });
       });
 
-      function clip(d) {
-        return path(circle.clip(d));
-      }
-
       function siteClick() {
         // Get the lat/long from the click location
-        var inverseClick = projection.invert(
+        var inverseClick = that.projection.invert(
           [d3.mouse(this)[0], d3.mouse(this)[1]]);
-        
-        projection.origin(inverseClick);
 
         var modifier = (d3.event.shiftKey ? -1 : 1);
+        var newScale = that.projection.scale() + modifier*that.zoomAmount;
 
-        projection.scale(projection.scale() + modifier*that.zoomAmount);
-        that.sites
-          .transition()
-          .delay(100)
-          .duration(500)
-          .attr("transform", 
-            function(d) { 
-              return "translate(" + projection([d.xcoord, d.ycoord]) + ")"; 
-            });
-        embossed
-          .transition()
-          .delay(100)
-          .duration(500)
-          .attr("d", clip);
+        that.model.set("map-scale", newScale);
+        that.model.set("map-origin", inverseClick);
+       
+        that.moveMap();
       }
+    },
+
+    clip: function (d) {
+      var circle = d3.geo.greatCircle()
+        .origin(this.projection.origin());
+
+      var path = d3.geo.path()
+        .projection(this.projection);
+
+      return path(circle.clip(d));
+    },
+
+    moveMap: function() {
+      this.projection.origin(this.model.get("map-origin"));
+
+      this.projection.scale(this.model.get("map-scale"));
+
+      var that = this;
+
+      this.sites
+        .transition()
+        .delay(100)
+        .duration(500)
+        .attr("transform", 
+          function(d) { 
+            return "translate(" + that.projection([d.xcoord, d.ycoord]) + ")"; 
+          });
+      embossed
+        .transition()
+        .delay(100)
+        .duration(500)
+        .attr("d", this.clip);
     }
 });
   
