@@ -209,34 +209,11 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           visiblePlaces);
       }
 
-      // Register to listen to updates of parallel fields
-      for (var i = 0; i < this.parallelFieldNames.length; i++) {
-        mapConfigModel.get("parallelConfig").bind(
-          "change:" + this.parallelFieldNames[i], filterData);
-        mapConfigModel.get("parallelConfig").bind(
-          "change:" + this.parallelFieldNames[i], updateStateString);
-      }
+      // Register to listen to changes in place configuration
+      mapConfigModel.listenToMapConfigChanges(filterData);
+      mapConfigModel.listenToMapConfigChanges(updateStateString);
 
-      // Register to listen to updates of binary fields
-      for (var i = 0; i < this.binaryFieldNames.length; i++) {
-        mapConfigModel.get("binaryConfig").bind(
-          "change:" + this.binaryFieldNames[i], filterData);
-        mapConfigModel.get("binaryConfig").bind(
-          "change:" + this.binaryFieldNames[i], updateStateString);
-      }
-
-      // Listen to changes in checkbox values
-      for (var i = 0; i < this.checkboxFieldNames.length; i++) {
-        var name = this.checkboxFieldNames[i];
-        var values = this.checkboxFieldValues[name];
-        for (var j = 0; j < values.length; j++) {
-          var changeHandler = "change:" + name + "-" + values[j];
-          mapConfigModel.get("checkboxConfig").bind(changeHandler, filterData);
-          mapConfigModel.get("checkboxConfig")
-            .bind(changeHandler, updateStateString);
-        }
-      }
-
+      // Set the visible places to the whole data set.
       this.set("visiblePlaces" + mapConfigModel.get("modelNum"), 
         this.polisData);
    

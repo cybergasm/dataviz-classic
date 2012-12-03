@@ -50,6 +50,39 @@ define(['backbone', 'data_module'], function(Backbone, dataModule) {
       this.set("parallelConfig", new parallelConfigModel());
       this.set("checkboxConfig", new checkboxConfigModel());
       this.set("stateString", "");
+    },
+
+    // The following allow a callback to be registered in response to the
+    // individual attributes of a map configuration or for all.
+    listenToMapConfigChanges: function(callback) {
+      this.listenToMapParallelConfigChanges(callback);
+      this.listenToMapBinaryChanges(callback);
+      this.listenToMapCheckboxChanges(callback);
+    },
+
+    listenToMapParallelConfigChanges: function(callback) {
+      for (var i = 0; i < dataModule.parallelFieldNames.length; i++) {
+        this.get("parallelConfig").bind(
+          "change:" + dataModule.parallelFieldNames[i], callback);
+      }
+    },
+
+    listenToMapBinaryChanges: function(callback) {
+      for (var i = 0; i < dataModule.binaryFieldNames.length; i++) {
+        this.get("binaryConfig").bind(
+          "change:" + dataModule.binaryFieldNames[i], callback);
+      }
+    },
+
+    listenToMapCheckboxChanges: function(callback) {
+      for (var i = 0; i < dataModule.checkboxFieldNames.length; i++) {
+        var name = dataModule.checkboxFieldNames[i];
+        var values = dataModule.checkboxFieldValues[name];
+        for (var j = 0; j < values.length; j++) {
+          var changeHandler = "change:" + name + "-" + values[j];
+          this.get("checkboxConfig").bind(changeHandler, callback);
+        }
+      }
     }
   });
 
