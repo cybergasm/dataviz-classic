@@ -157,7 +157,9 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       $("#" + this.loadId, this.el)
         .button()
         .click(function() {
-          that.reloadMapFromString("Constitution-Dem=false,Constitution-Pol=false,Constitution-NR=false,");
+          var string = $("#" + that.stringRepId).val();
+          console.log(string);
+          that.reloadMapFromString(string);
         });
 
       // Draws the map

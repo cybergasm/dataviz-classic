@@ -281,6 +281,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         }
 
         console.log(myStateString);
+        mapConfigModel.set("stateString", myStateString);
       } 
     }  
   });
