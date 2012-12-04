@@ -218,7 +218,6 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           fieldMax = curField.max;
           fieldMin = curField.min;
           if(toCheck[pField] < fieldMin || toCheck[pField] > fieldMax) {
-            console.log("Returning false in pfield: " + toCheck[pField]);
             return false;
           }
         }
@@ -297,7 +296,6 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         }
         that.set("visiblePeople" + peopleConfigModel.get("modelNum"), 
           visiblePeople);
-        console.log(visiblePeople);
       }
 
       // Register to listen to changes in person configuration

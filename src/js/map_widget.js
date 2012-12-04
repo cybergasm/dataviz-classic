@@ -3,6 +3,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
   var mapWidget = Backbone.View.extend( {
 
     mapId: "map",
+    svgId: "svg-map",
     mapClass: "mapView",
     filteredPlacesDataId: "visiblePlaces",
     filteredPeopleDataId: "visiblePeople",
@@ -38,7 +39,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         this.model.get("modelNum");
 
       this.mapId = this.mapId + this.model.get("modelNum");
-
+      this.svgId = this.svgId + this.model.get("modelNum");
+      this.togglePeopleId = this.togglePeopleId + this.model.get("modelNum")
       // Make ourselvs a listener to when the visible places change.
       dataModule.bind("change:" + this.filteredPlacesDataId, 
         updateVisiblePlaces);
@@ -56,7 +58,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     },
 
     cloneMap: function() {
-      return $("#" + this.mapId)
+      return $("#" + this.svgId)
         .clone()
         .removeAttr("id");
     },
@@ -110,8 +112,13 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
             if (residents == undefined) {
               return 0;
             } else {
+              var count = countEffectivePeople(residents);
+              if (count == 0) {
+                return 0;
+              }
+
               var bucketed = d3.scale.log().domain([1, 453]).range([5, 20]);
-              return bucketed(countEffectivePeople(residents));
+              return bucketed(count);
             }
           } else {
             return 7;
@@ -120,7 +127,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     },
 
     renderMap: function() {
-      $("#svg-map" + this.model.get("modelNum"))
+      $("#" + this.svgId)
         .remove();
       
       // Save a reference
@@ -143,7 +150,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         .attr("preserveAspectRatio", "xMidYMid")
         .attr("width", width)
         .attr("height", height)
-        .attr("id", "svg-map" + this.model.get("modelNum"))
+        .attr("id", this.svgId)
         .on("click", siteClick);
 
       var map = mapsvg.append("svg:g").attr("class", "map")

@@ -22,7 +22,7 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
       var newMap = map.attributes.mapDialogRef.getMapPic();
       
       // Resize the map picture  
-      $("svg", newMap)
+      $(newMap)
         .attr("width", 600)
         .attr("height", 400)
         .on("click", function() {
@@ -58,7 +58,6 @@ define(['jquery-ui', 'backbone', 'data_module', 'map_config_dialog',
     },
 
     removeMap: function(map) {
-      console.log("Removing map");
       $("#map" + map.attributes.mapDialogRef.model.get("modelNum"))
         .remove();
     },

@@ -160,7 +160,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       var that = this;
 
       this.elId = this.elId + mapComparisonModelEditor.collection.length;
-      this.saveMap = this.saveMap + mapComparisonModelEditor.collection.length;
+      this.saveId = this.saveId + mapComparisonModelEditor.collection.length;
 
       // Check if this dialog is already made.
       if ($("#" + this.elId).length != 0) {
