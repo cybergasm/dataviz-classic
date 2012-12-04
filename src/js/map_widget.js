@@ -81,53 +81,50 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
 
       var map = mapsvg.append("svg:g").attr("class", "map")
         .attr("transform", "translate(2,3)");
+      
+      embossed = map.selectAll("path.countries")
+        .data(dataModule.mapCountries.features)
+        .enter().append("svg:path")
+        .attr("d", that.clip)
+        .attr("class", "countries")
+        .style("fill", "#E8E8E8")
+        .style("stroke", "#C4C2C3")
+        .style("stroke-width", 4);
 
-      var JSON_PATH = "../../data/romeland.json";
+      // Save sites so we can chage what is visible later
+      that.sites = map.selectAll("g.sites") 
+        .data(dataModule.polisData)
+        .enter()
+        .append("svg:g")
+        .attr("class", "foreground")
+        .attr("transform", function(d) {
+          return "translate(" + that.projection([d.  xcoord,d.ycoord]) + ")";
+        })
+        .style("cursor", "pointer");
 
-      d3.json(JSON_PATH, function(collection) {
-        embossed = map.selectAll("path.countries")
-          .data(collection.features)
-          .enter().append("svg:path")
-          .attr("d", that.clip)
-          .attr("class", "countries")
-          .style("fill", "#E8E8E8")
-          .style("stroke", "#C4C2C3")
-          .style("stroke-width", 4);
+      that.sites.append("svg:circle")      
+        .attr('r', 7)
+        .attr("class", "sites")
+        .style("fill", "807E7F")
+        .style("stroke", "grey")
+        .style("opacity", 0)
+        .transition()
+        .delay(300)
+        .duration(1000)
+        .style("opacity", .85);
 
-        // Save sites so we can chage what is visible later
-        that.sites = map.selectAll("g.sites") 
-          .data(dataModule.polisData)
-          .enter()
-          .append("svg:g")
-          .attr("class", "foreground")
-          .attr("transform", function(d) {
-            return "translate(" + that.projection([d.  xcoord,d.ycoord]) + ")";
-          })
-          .style("cursor", "pointer");
-
-        that.sites.append("svg:circle")      
-          .attr('r', 7)
-          .attr("class", "sites")
-          .style("fill", "807E7F")
-          .style("stroke", "grey")
-          .style("opacity", 0)
-          .transition()
-          .delay(300)
-          .duration(1000)
-          .style("opacity", .85);
-
-        $('svg circle').tipsy({
-          gravity: 'sw',
-          html: true,
-          title: function() {
-            var info = "<span>";
-            info += "<p>Name: " + this.__data__["name"];
-              
-            info += "</span>"
-            return info;
-          }
-        });
+      $('svg circle').tipsy({
+        gravity: 'sw',
+        html: true,
+        title: function() {
+          var info = "<span>";
+          info += "<p>Name: " + this.__data__["name"];
+            
+          info += "</span>"
+          return info;
+        }
       });
+   
 
       function siteClick() {
         // Get the lat/long from the click location
