@@ -138,7 +138,8 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         //Check parallel coordinate fields
         for(var i = 0; i < that.peopleParallelFieldNames.length; i++) {
           var pField = that.peopleParallelFieldNames[i];
-          var curField = peopleConfigModel.get("peopleParallelConfig").get(pField);
+          var curField = peopleConfigModel.get("peopleParallelConfig")
+            .get(pField);
           fieldMax = curField.max;
           fieldMin = curField.min;
           if(toCheck[pField] < fieldMin || toCheck[pField] > fieldMax) {
@@ -149,7 +150,8 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         //Check binary fields
         for(var i = 0; i < that.peopleBinaryFieldNames.length; i++) {
           var bField = that.peopleBinaryFieldNames[i];
-          var curBinaryField = peopleConfigModel.get("peopleBinaryConfig").get(bField);
+          var curBinaryField = peopleConfigModel.get("peopleBinaryConfig")
+            .get(bField);
           var noFieldSetting = curBinaryField[0];
           var yesFieldSetting = curBinaryField[1];
           var toCheckValue = toCheck[bField];

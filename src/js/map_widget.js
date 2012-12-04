@@ -10,7 +10,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     initScale:2500,
 
     initialize: function(options) {
-      _.bindAll(this, 'render', 'cloneMap', 'clip', 'moveMap');
+      _.bindAll(this, 'render', 'cloneMap', 'clip', 'moveMap', 'getId');
       
       this.el = $(options.parentElem);
 
@@ -47,6 +47,10 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       return $("#" + this.mapId)
         .clone()
         .removeAttr("id");
+    },
+
+    getId: function() {
+      return this.mapId;
     },
 
     render: function() {
@@ -117,11 +121,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
           html: true,
           title: function() {
             var info = "<span>";
-            for (var key in this.__data__) {
-              if (this.__data__.hasOwnProperty(key)) {
-                info += "<p>" + key + ": " + this.__data__[key];
-              }
-            }
+            info += "<p>Name: " + this.__data__["name"];
+              
             info += "</span>"
             return info;
           }

@@ -3,12 +3,12 @@
 define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 
   'checkboxes_widget', 'map_widget', 'data_module', 'map_config_model', 
   'data_table_widget', 'export_widget', 'map_comparison_model', 
-  'people_binary_boxes_widget', 'people_config_model'], 
+  'people_binary_boxes_widget', 'people_list', 'people_config_model'], 
     function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, 
       checkboxesWidgetFactory, mapWidgetFactory, dataModule, 
       mapConfigModelFactory, dataTableWidgetFactory, exportWidgetFactory,
       mapComparisonModelEditor, peopleBinaryBoxesWidgetFactory, 
-      peopleConfigModelFactory) {
+      peopleListFactory, peopleConfigModelFactory) {
   
     var dialogView = Backbone.View.extend( {
     
@@ -19,6 +19,8 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
     stringRepId: "string-rep",
     tabsContentList: "tabs-list",
     controlId: "controlbox",
+    viewsId: "dataViews",
+    viewsContentList: "dataViewsList",
     configurationCollectionEntry: null,
 
     events: {},
@@ -26,7 +28,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
     initialize: function(options) {
       // This allows the enumerated methods to refer to this object
       _.bindAll(this, 'render', 'openDialog', 'saveMap', 'reloadMapFromString', 
-        'renderOptionWidgets', 'getMapPic');
+        'renderOptionWidgets', 'renderDataViews', 'getMapPic');
       this.el = $(options.parentElem);
 
       // Creates a model for this configuration
@@ -126,17 +128,31 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.dataTableWidget.getId() + "\">" +
           "Table of Cities</a></li>");
-
-      this.exportWidget = exportWidgetFactory("#" + this.tabsId, this.model);
-      $("#" + this.tabsContentList, this.el)
-        .append("<li><a href=\"#" + this.exportWidget.getId() + "\">" +
-          "Export</a></li>");
-
+      
       this.peopleBinaryBoxesWidget = peopleBinaryBoxesWidgetFactory("#" + 
         this.tabsId, this.peopleModel);
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.peopleBinaryBoxesWidget.getId() + 
           "\">" + "People Toggle</a></li>");
+
+      this.exportWidget = exportWidgetFactory("#" + this.tabsId, this.model);
+      $("#" + this.tabsContentList, this.el)
+        .append("<li><a href=\"#" + this.exportWidget.getId() + "\">" +
+          "Export</a></li>");
+    },
+
+    // Renders the different data displays into a tab view on top of the 
+    // dialog.
+    renderDataViews: function() {
+      this.mapWidget = mapWidgetFactory("#" + this.viewsId, this.model);
+      $("#" + this.dataViewsList, this.el)
+        .append("<li><a href=\"#" + this.mapWidget.getId() + "\">" +
+          "Countries Map</a></li>");
+
+      this.peopleList = peopleListFactory("#" + this.viewsId, this.peopleModel);
+      $("#" + this.dataViewsList, this.el) 
+        .append("<li><a href=\"#" + this.peopleList.getId() + "\">" +
+          "People</a></li>");;
     },
 
     // Adds a dialog div and configures it to be hidden.
@@ -174,7 +190,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       $("#" + this.stringRepId, this.el)
         .attr("class", "loadBox ui-widget ui-state-default ui-corner-all");
       $("#" + this.stringRepId, this.el)
-        .val("hello");
+        .val("Paste a provided configuration string here.");
 
       // Append a button to refresh the map from a URL
       $("#" + this.controlId, this.el)
@@ -187,9 +203,18 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
           that.reloadMapFromString(string);
         });
 
-      // Draws the map
-      this.mapWidget = mapWidgetFactory("#" + this.elId, this.model);
+      // Create the tabs for the different views.
+      $("#" + this.elId, this.el) 
+        .append("<div id=\"" + this.viewsId + "\"></div>");
+
+       $("#" + this.viewsId, this.el)
+        .append("<ul id=\""+ this.dataViewsList +"\"></ul>");
+
+      this.renderDataViews();
       
+      $("#" + this.viewsId, this.el)
+        .tabs();
+
       // Create a tabs container
       $("#" + this.elId, this.el)
         .append("<div id=\"" + this.tabsId +"\"></div>");
@@ -209,7 +234,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         autoOpen: false,
         show: "blind",
         hide: "blind",
-        width: 1350,
+        width: 1450,
         height: "auto",
       });
     },

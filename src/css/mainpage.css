@@ -56,7 +56,12 @@ svg {
   height:400px;
 }
 
-#dataTable {
+.dataTable {
+  width:800;
+  overflow:auto;
+}
+
+.peopleTable {
   width:800;
   overflow:auto;
 }
@@ -68,6 +73,7 @@ svg {
 
 #controlbox {
   margin-bottom:10px;
+  margin-left:15%;
 }
 /*#main {
   border:2px solid gray;
