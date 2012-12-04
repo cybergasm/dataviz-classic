@@ -4,17 +4,22 @@
 // specified data has been loaded. 
 define(['backbone', 'd3'], function (Backbone, d3) { 
   
-  var PATHS = {
-    "polisData" : "../../data/polis_10_12.csv",
-    "peopleData" : "../../data/people_full_1.csv",
-    "endeavorData" : "../../data/endeavor_categories.csv",
-    "placeCodesData" : "../../data/placecodes.csv",
+  var CSV_PATHS = {
+    "polisData": "../../data/polis_10_12.csv",
+    "peopleData": "../../data/people_full_1.csv",
+    "endeavorData": "../../data/endeavor_categories.csv",
+    "placeCodesData": "../../data/placecodes.csv",
+  };
+
+  var JSON_PATHS = {
+    "mapCountries": "../../data/romeland.json",
   };
 
   var dataModel = Backbone.Model.extend({
     loadData: function(callback) {
-      pathsToLoad = _.size(PATHS);
-      
+      csvPathsToLoad = _.size(CSV_PATHS);
+      jsonPathsToLoad = _.size(JSON_PATHS);
+
       // Storing pointer to our model so we can set the data after it is loaded
       that = this;
 
@@ -129,26 +134,40 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         that.allPeopleFieldNames = peopleHeaders;
       } 
 
-      for (var path in PATHS) {
+      for (var path in CSV_PATHS) {
         // Javascript wizardy incoming. Since we are in a loop the path in the
         // inner function will always be the last iteration due to the closure
         // variable being overwritten by the loop. SO we execute a function 
         // takes the current path and returns a function which takes a csv to
         // save the path at time of iteration in a new closure.
-        d3.csv(PATHS[path], (function(loadedPath) {
+        d3.csv(CSV_PATHS[path], (function(loadedPath) {
           return function(csv) {
-            pathsToLoad--;
+            csvPathsToLoad--;
             // Set this CSV as member with name equal to the key pointing to the
             // path of this file. Then check if we've loaded everything, if so,
             // call the given callback after pulling out any extreneous data we
             // we need.
             that[loadedPath] = csv;
-            if (pathsToLoad == 0) {
+            if (csvPathsToLoad == 0 && jsonPathsToLoad == 0) {
               processData();
               callback();
             }
           }
         }) (path));  
+      }
+
+      for (var path in JSON_PATHS) {
+        d3.json(JSON_PATHS[path], (function(loadedPath) {
+          return function(json) {
+            jsonPathsToLoad--;
+
+            that[loadedPath] = json;
+            if (csvPathsToLoad == 0 && jsonPathsToLoad == 0) {
+              processData();
+              callback();
+            }
+          }
+        }) (path));
       }
     }, 
 

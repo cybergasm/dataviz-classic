@@ -5,12 +5,16 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     mapId: "map",
     mapClass: "mapView",
     filteredDataId: "visiblePlaces",
+    togglePeopleId: "togglePeople",
     zoomAmount: 500,
     initOrigin:[22.8, 38.6],
     initScale:2500,
 
+    withPeople: false, 
+
     initialize: function(options) {
-      _.bindAll(this, 'render', 'cloneMap', 'clip', 'moveMap', 'getId');
+      _.bindAll(this, 'render', 'cloneMap', 'clip', 'moveMap', 'getId',
+        'renderMap');
       
       this.el = $(options.parentElem);
 
@@ -54,9 +58,31 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     },
 
     render: function() {
+      var that = this;
+
       $(this.el).append("<div id=\"" + this.mapId +"\" class=\"" + 
         this.mapClass + "\"></div>");
 
+      // Add a button for toggling people data
+      $("#" + this.mapId, this.el)
+        .append("<input type=\"checkbox\" id=\"" + 
+          this.togglePeopleId + "\" />" + "<label for=\"" + 
+          this.togglePeopleId + "\">Include People Data on Map</label>");
+
+      $("#" + this.togglePeopleId, this.el)
+        .button()
+        .click(function() {
+          that.withPeople = !that.withPeople;
+          that.renderMap();
+        });
+      
+      this.renderMap();
+    },
+
+    renderMap: function(remove) {
+      $("#svg-map" + this.model.get("modelNum"))
+        .remove();
+      
       // Save a reference
       var that = this;
 
@@ -77,57 +103,61 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         .attr("preserveAspectRatio", "xMidYMid")
         .attr("width", width)
         .attr("height", height)
+        .attr("id", "svg-map" + this.model.get("modelNum"))
         .on("click", siteClick);
 
       var map = mapsvg.append("svg:g").attr("class", "map")
         .attr("transform", "translate(2,3)");
 
-      var JSON_PATH = "../../data/romeland.json";
+      embossed = map.selectAll("path.countries")
+        .data(dataModule.mapCountries.features)
+        .enter().append("svg:path")
+        .attr("d", that.clip)
+        .attr("class", "countries")
+        .style("fill", "#E8E8E8")
+        .style("stroke", "#C4C2C3")
+        .style("stroke-width", 4);
 
-      d3.json(JSON_PATH, function(collection) {
-        embossed = map.selectAll("path.countries")
-          .data(collection.features)
-          .enter().append("svg:path")
-          .attr("d", that.clip)
-          .attr("class", "countries")
-          .style("fill", "#E8E8E8")
-          .style("stroke", "#C4C2C3")
-          .style("stroke-width", 4);
+      // Save sites so we can chage what is visible later
+      that.sites = map.selectAll("g.sites") 
+        .data(dataModule.polisData)
+        .enter()
+        .append("svg:g")
+        .attr("class", "foreground")
+        .attr("transform", function(d) {
+          return "translate(" + that.projection([d.  xcoord,d.ycoord]) + ")";
+        })
+        .style("cursor", "pointer");
 
-        // Save sites so we can chage what is visible later
-        that.sites = map.selectAll("g.sites") 
-          .data(dataModule.polisData)
-          .enter()
-          .append("svg:g")
-          .attr("class", "foreground")
-          .attr("transform", function(d) {
-            return "translate(" + that.projection([d.  xcoord,d.ycoord]) + ")";
-          })
-          .style("cursor", "pointer");
-
-        that.sites.append("svg:circle")      
-          .attr('r', 7)
-          .attr("class", "sites")
-          .style("fill", "807E7F")
-          .style("stroke", "grey")
-          .style("opacity", 0)
-          .transition()
-          .delay(300)
-          .duration(1000)
-          .style("opacity", .85);
-
-        $('svg circle').tipsy({
-          gravity: 'sw',
-          html: true,
-          title: function() {
-            var info = "<span>";
-            info += "<p>Name: " + this.__data__["name"];
-              
-            info += "</span>"
-            return info;
+      that.sites.append("svg:circle")      
+        .attr('r', 7)
+        .attr("class", "sites")
+        .style("fill", function() {
+          if (that.withPeople) {
+            return "red";
+          } else {
+            return "grey";
           }
-        });
+        })
+        .style("stroke", "grey")
+        .style("opacity", 0)
+        .transition()
+        .delay(300)
+        .duration(1000)
+        .style("opacity", .85);
+
+      $('svg circle').tipsy({
+        gravity: 'sw',
+        html: true,
+        title: function() {
+          var info = "<span>";
+          info += "<p>Name: " + this.__data__["name"];
+            
+          info += "</span>"
+          return info;
+        }
       });
+   
 
       function siteClick() {
         // Get the lat/long from the click location
