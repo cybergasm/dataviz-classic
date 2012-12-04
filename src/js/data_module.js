@@ -303,9 +303,14 @@ define(['backbone', 'd3'], function (Backbone, d3) {
       // Register to listen to changes in person configuration
       peopleConfigModel.listenToPeopleConfigChanges(filterPeopleData);
 
-      // Set the visible places to the whole data set.
-      this.set("visiblePeople" + peopleConfigModel.get("modelNum"), 
-        this.peopleData);
+      // Set the visible people to the whole data set after creating an initial
+      // id to people map.
+      var idToPerson = {};
+
+      for (var i = 0; i < that.peopleData.length; i++) {
+        idToPerson[that.peopleData[i].unique_id] = that.peopleData[i];
+      }
+      this.set("visiblePeople" + peopleConfigModel.get("modelNum"), idToPerson);
 
     },   
 

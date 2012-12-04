@@ -23,7 +23,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'datatable'],
 
       this.columns = [];
 
-      var data = dataModule.get(this.filteredDataId);
+      var data = dataModule.peopleData;
 
       for (var key in data[0]) {
         if (data[0].hasOwnProperty(key)) {

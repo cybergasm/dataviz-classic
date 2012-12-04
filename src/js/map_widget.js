@@ -4,7 +4,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
 
     mapId: "map",
     mapClass: "mapView",
-    filteredDataId: "visiblePlaces",
+    filteredPlacesDataId: "visiblePlaces",
+    filteredPeopleDataId: "visiblePeople",
     togglePeopleId: "togglePeople",
     zoomAmount: 500,
     initOrigin:[22.8, 38.6],
@@ -14,7 +15,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
 
     initialize: function(options) {
       _.bindAll(this, 'render', 'cloneMap', 'clip', 'moveMap', 'getId',
-        'renderMap');
+        'renderMap', 'updatePeopleDataOnMap');
       
       this.el = $(options.parentElem);
 
@@ -25,17 +26,24 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
 
       function updateVisiblePlaces() {
         that.sites.style("display", function(d, i) {
-          return (dataModule.get(that.filteredDataId)[d['name']] ? null : 
+          return (dataModule.get(that.filteredPlacesDataId)[d['name']] ? null : 
             "none");
         });
       }
 
       // We want to specify the map and data specifically for this map view.
-      this.filteredDataId = this.filteredDataId + this.model.get("modelNum");
+      this.filteredPlacesDataId = this.filteredPlacesDataId + 
+        this.model.get("modelNum");
+      this.filteredPeopleDataId = this.filteredPeopleDataId +
+        this.model.get("modelNum");
+
       this.mapId = this.mapId + this.model.get("modelNum");
 
       // Make ourselvs a listener to when the visible places change.
-      dataModule.bind("change:" + this.filteredDataId, updateVisiblePlaces);
+      dataModule.bind("change:" + this.filteredPlacesDataId, 
+        updateVisiblePlaces);
+      dataModule.bind("change:" + this.filteredPeopleDataId,
+        this.updatePeopleDataOnMap);
 
       this.model.set("map-scale", this.initScale);
       this.model.set("map-origin", this.initOrigin);
@@ -73,26 +81,45 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         .button()
         .click(function() {
           that.withPeople = !that.withPeople;
-          that.sites.selectAll("circle")
-            .attr("r", function(d) {
-              if (that.withPeople) {
-                var residents = that.dataModule.residencyMap[d['polis_id']];
-                if (residents == undefined) {
-                  return 0;
-                } else {
-                  var bucketed = d3.scale.log().domain([1, 453]).range([5, 20]);
-                  return bucketed(residents.length);
-                }
-              } else {
-                return 7;
-              }
-            });
+          that.updatePeopleDataOnMap();        
         });
       
       this.renderMap();
     },
 
-    renderMap: function(remove) {
+    updatePeopleDataOnMap: function() {
+      var that = this;
+      this.sites.selectAll("circle")
+        .attr("r", function(d) {
+          // Sees which people residing are visible.
+          function countEffectivePeople(people) {
+            var visible = that.dataModule.get("visiblePeople" + 
+              that.model.get("modelNum"));
+            var count = 0;
+            for (var i = 0; i < people.length; i++) {
+              var person = that.dataModule.peopleData[people[i]]
+              if (visible[person["unique_id"]] != undefined) {
+                count++;
+              }
+            }
+            return count;
+          }
+
+          if (that.withPeople) {
+            var residents = that.dataModule.residencyMap[d['polis_id']];
+            if (residents == undefined) {
+              return 0;
+            } else {
+              var bucketed = d3.scale.log().domain([1, 453]).range([5, 20]);
+              return bucketed(countEffectivePeople(residents));
+            }
+          } else {
+            return 7;
+          }
+        });
+    },
+
+    renderMap: function() {
       $("#svg-map" + this.model.get("modelNum"))
         .remove();
       
