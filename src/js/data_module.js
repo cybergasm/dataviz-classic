@@ -8,6 +8,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
     "polisData" : "../../data/polis_10_12.csv",
     "peopleData" : "../../data/people_full_1.csv",
     "endeavorData" : "../../data/endeavor_categories.csv",
+    "placeCodesData" : "../../data/placecodes.csv",
   };
 
   var dataModel = Backbone.Model.extend({
@@ -57,6 +58,16 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           info['category'] = that.endeavorData[i]['category'];
           endeavorInformation[that.endeavorData[i]['id']] = info;
         }
+
+        // PLACE CODES DATA
+        // Generates an array where the index is the place id and the value is
+        // the place name
+        var placeCodeToName = [];
+        for(var i = 0; i < that.placeCodesData.length; i++) {
+          var placeID = parseInt((that.placeCodesData[i]['id']));
+          placeCodeToName[placeID] = that.placeCodesData[i]['name'];
+        }
+
         // PEOPLE DATA
         var peopleHeaders = d3.keys(that.peopleData[0]);
 
@@ -64,7 +75,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         that.textFieldNames = peopleHeaders.filter(function(d) { 
           return that.peopleData[0][d] == "textbox";});
         that.peopleCheckboxFieldNames = peopleHeaders.filter(function(d) { 
-          return that.peopleData[0][d] == "optionbox";});
+          return that.peopleData[0][d] == "checkbox";});
         that.peopleParallelFieldNames = peopleHeaders.filter(function(d) { 
           return that.peopleData[0][d] == "parallel";});
         that.peopleBinaryFieldNames = peopleHeaders.filter(function(d) { 
@@ -98,6 +109,25 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           that.peopleData[i]['Endeavors'] = endeavorNames;
         }
 
+        var fieldsToFix = ["Work/Living_Places", "Birthplace"];
+        for(var n = 0; n < fieldsToFix.length; n++){
+          var fieldName = fieldsToFix[n];
+          var numberFieldName = fieldName + "_Code";
+          for(var i = 0; i < that.peopleData.length; i++) {
+            var placeCodes = that.peopleData[i][numberFieldName];
+            var placeCodesArr = (placeCodes).split(",");        
+            var placeNames = [];
+            for(var j = 0; j < placeCodesArr.length; j++) {
+              var currentCode = placeCodesArr[j];
+              if(parseInt(currentCode) != 0) {
+                var name = placeCodeToName[parseInt(currentCode)];
+                placeNames.push(name);  
+//                console.log("name");
+              }
+            }
+            that.peopleData[i][fieldName] = placeNames;
+          }
+        }
 
       } 
 
