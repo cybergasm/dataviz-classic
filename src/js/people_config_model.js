@@ -23,7 +23,8 @@ define(['backbone', 'data_module'], function(Backbone, dataModule) {
         // Each parallel field name points to a tuple of values showing the
         // current min and max set for this value.
         // TODO figure out actual min and max
-        this.set(dataModule.peopleParallelFieldNames[i], {min:0, max:1000000});
+        this.set(dataModule.peopleParallelFieldNames[i], 
+          {min:-10000000, max:1000000});
       }
     }
   });

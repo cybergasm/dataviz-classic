@@ -7,7 +7,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'datatable'],
     filteredDataId: "visiblePeople",
 
     initialize: function(options) {
-      _.bindAll(this, 'render', 'getId');
+      _.bindAll(this, 'render', 'getId', 'updateData');
       
       this.el = $(options.parentElem);
 
@@ -17,6 +17,9 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'datatable'],
 
       this.filteredDataId = this.filteredDataId + this.model.get("modelNum");
       this.tableId = this.tableId + this.model.get("modelNum");
+
+      // Make ourselvs a listener to when the visible people change.
+      dataModule.bind("change:" + this.filteredDataId, this.updateData);
 
       this.columns = [];
 
@@ -33,6 +36,21 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'datatable'],
 
     getId: function() {
       return this.tableId;
+    },
+
+    updateData: function() {
+      this.tableController.fnClearTable();
+      var data = dataModule.get(this.filteredDataId);
+      if (_.size(data) != 0) {
+        // We get the data back through data module's visible people as a
+        // map of name->values. Here we extract the values into an array as 
+        // that is what DataTable expects.
+        var dataForTable = [];
+        for (var city in data) {
+          dataForTable.push(data[city])
+        }
+        this.tableController.fnAddData(dataForTable)
+      }
     },
 
     render: function() {

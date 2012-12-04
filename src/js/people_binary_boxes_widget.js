@@ -39,7 +39,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         var fieldName = checkbox.name; // eg. "Demos"
         var fieldId = checkbox.id; // eg. "Demos_no"
         var fieldValue = (fieldId.split("-"))[1]; // "yes" or "no"
-        var pastBinarySetting = that.model.get("peopleBinaryConfig").get(fieldName);
+        var pastBinarySetting = that.model.get("peopleBinaryConfig")
+          .get(fieldName);
         if (fieldValue == "yes") {
         that.model.get("peopleBinaryConfig").set(fieldName, 
           [pastBinarySetting[0],checkbox['checked']]);

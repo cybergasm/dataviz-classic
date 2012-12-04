@@ -143,6 +143,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           fieldMax = curField.max;
           fieldMin = curField.min;
           if(toCheck[pField] < fieldMin || toCheck[pField] > fieldMax) {
+            console.log("Returning false in pfield: " + toCheck[pField]);
             return false;
           }
         }
@@ -177,10 +178,10 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           }
         }
 
-        // Check the checkbox values by going through every name and category
+        /*// Check the checkbox values by going through every name and category
         // and checking if it is checked by user and if it is in the data for
-        // this city. If any of the associated values with the city are checked
-        // we return true.        
+        // this person. If any of the associated values with the person are 
+        // checked we return true.        
         for (var i = 0; i < that.peopleCheckboxFieldNames.length; i++) {
           var name = that.peopleCheckboxFieldNames[i];
           var valuesInData = toCheck[name];
@@ -204,7 +205,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           if (!containsCheckBox) {
             return false;
           }
-        }
+        }*/
 
         return true;
       }
