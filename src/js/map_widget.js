@@ -12,6 +12,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     togglePeopleId: "togglePeople",
     zoomSliderId: "zoomSlider",
     zoomSliderClass: "zoomSlider",
+    zoomContainerClass: "zoomWidget",
+    zoomContainerId: "zoomWidget",
     zoomAmtId: "zoomAmt",
     zoomMin:2000,
     zoomMax:15000,
@@ -93,9 +95,12 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       $("#" + this.mapId, this.el)
         .append("<div id=\"" + this.mapAndZoomId + "\"" + 
           " class=\"" + this.mapAndZoomClass + "\"></div>");
+      $("#" + this.mapAndZoomId, this.el)
+        .append("<div id=\"" + this.zoomContainerId + "\" " + 
+          "class=\"" + this.zoomContainerClass + "\"><span>Zoom</span></div>");
 
       // Add a zoom slider
-      $("#" + this.mapAndZoomId, this.el)
+      $("#" + this.zoomContainerId, this.el)
         .append("<div id=\"" + this.zoomSliderId + "\" " + 
           "class=\"" + this.zoomSliderClass + "\"></div>");
       

@@ -42,7 +42,8 @@ svg {
 }
 
 .mapAndZoom {
-  width:1400px;
+  width:1350px;
+  margin-top:20px;
 }
 
 .binaryForm {
@@ -76,9 +77,14 @@ svg {
   display:inline-block;
 }
 
+.zoomWidget {
+  float:left;
+  margin-right:10px;
+}
+
 .zoomSlider {
-  display:inline-block;
   height:800px;
+  margin-left:10px;
 }
 
 #controlbox {
