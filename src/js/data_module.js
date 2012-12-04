@@ -81,6 +81,39 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         that.peopleBinaryFieldNames = peopleHeaders.filter(function(d) { 
           return that.peopleData[0][d] == "binary";});
 
+        // Add the "endeavors" as text values to the people data
+        for(var i = 0; i < that.peopleData.length; i++) {
+          var endeavorCodes = that.peopleData[i]['Endeavor_codes'];
+          var endeavorCodesArr = (endeavorCodes).split(",");        
+          var endeavorNames = "";
+          for(var j = 0; j < endeavorCodesArr.length; j++) {
+            var currentCode = endeavorCodesArr[j];
+            if(currentCode in endeavorInformation) {
+              endeavorNames += (endeavorInformation[currentCode]['name'] + ",");  
+            }
+          }
+          that.peopleData[i]['Endeavors'] = endeavorNames;
+        }
+
+        var fieldsToFix = ["Work/Living_Places", "Birthplace"];
+        for(var n = 0; n < fieldsToFix.length; n++){
+          var fieldName = fieldsToFix[n];
+          var numberFieldName = fieldName + "_Code";
+          for(var i = 0; i < that.peopleData.length; i++) {
+            var placeCodes = that.peopleData[i][numberFieldName];
+            var placeCodesArr = (placeCodes).split(",");        
+            var placeNamesString = "";
+            for(var j = 0; j < placeCodesArr.length; j++) {
+              var currentCode = placeCodesArr[j];
+              if(placeCodeToName[parseInt(currentCode)] != undefined) {
+                var name = placeCodeToName[parseInt(currentCode)];
+                placeNamesString += (name + ",");
+              }
+            }
+            that.peopleData[i][fieldName] = placeNamesString;
+          }
+        }
+
         // Get set of possible values for every checkbox field name
         that.peopleCheckboxFieldValues  = {};
 
@@ -94,41 +127,6 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         that.peopleData.splice(0,2);
 
         that.allPeopleFieldNames = peopleHeaders;
-
-        // Add the "endeavors" as text values to the people data
-        for(var i = 0; i < that.peopleData.length; i++) {
-          var endeavorCodes = that.peopleData[i]['Endeavor_codes'];
-          var endeavorCodesArr = (endeavorCodes).split(",");        
-          var endeavorNames = [];
-          for(var j = 0; j < endeavorCodesArr.length; j++) {
-            var currentCode = endeavorCodesArr[j];
-            if(currentCode in endeavorInformation) {
-              endeavorNames.push(endeavorInformation[currentCode]['name']);  
-            }
-          }
-          that.peopleData[i]['Endeavors'] = endeavorNames;
-        }
-
-        var fieldsToFix = ["Work/Living_Places", "Birthplace"];
-        for(var n = 0; n < fieldsToFix.length; n++){
-          var fieldName = fieldsToFix[n];
-          var numberFieldName = fieldName + "_Code";
-          for(var i = 0; i < that.peopleData.length; i++) {
-            var placeCodes = that.peopleData[i][numberFieldName];
-            var placeCodesArr = (placeCodes).split(",");        
-            var placeNames = [];
-            for(var j = 0; j < placeCodesArr.length; j++) {
-              var currentCode = placeCodesArr[j];
-              if(parseInt(currentCode) != 0) {
-                var name = placeCodeToName[parseInt(currentCode)];
-                placeNames.push(name);  
-//                console.log("name");
-              }
-            }
-            that.peopleData[i][fieldName] = placeNames;
-          }
-        }
-
       } 
 
       for (var path in PATHS) {
