@@ -87,6 +87,11 @@ svg {
   margin-left:10px;
 }
 
+.yearSelector { 
+  width: 1000px;
+  margin-left:100px;
+}
+
 #controlbox {
   margin-bottom:10px;
   margin-left:15%;

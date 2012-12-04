@@ -15,6 +15,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     zoomContainerClass: "zoomWidget",
     zoomContainerId: "zoomWidget",
     zoomAmtId: "zoomAmt",
+    yearSelectorId: "yearSelector",
+    yearSelectorClass: "yearSelector",
     zoomMin:2000,
     zoomMax:15000,
     initOrigin:[22.8, 38.6],
@@ -52,6 +54,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       this.zoomSliderId += this.model.get("modelNum");
       this.zoomAmtId += this.model.get("modelNum");
       this.mapAndZoomId += this.model.get("modelNum");
+      this.zoomContainerId += this.model.get("modelNum");
+      this.yearSelectorId += this.model.get("modelNum");
 
       // Make ourselvs a listener to when the visible places change.
       dataModule.bind("change:" + this.filteredPlacesDataId, 
@@ -122,6 +126,22 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
           that.updatePeopleDataOnMap();        
         });
       
+      // Add a slider for years
+      $("#" + this.mapId, this.el)
+        .append("<span class=\"yearSelectorDescription\">" + 
+          "Select active year range</span>");
+      $("#" + this.mapId, this.el)
+        .append("<div id=\"" + this.yearSelectorId + "\"" + 
+          "class=\"" + this.yearSelectorClass + "\"></div>");
+      $("#" + this.yearSelectorId, this.el)
+        .slider({
+          range:true,
+          min:800,
+          max:1800,
+          values: [400, 900]
+        })
+
+      // Draw map 
       this.renderMap();
     },
 
