@@ -127,7 +127,6 @@ define(['backbone', 'd3'], function (Backbone, d3) {
               if(parseInt(currentCode) != 0) {
                 var name = placeCodeToName[parseInt(currentCode)];
                 placeNames.push(name);  
-//                console.log("name");
               }
             }
             that.peopleData[i][fieldName] = placeNames;

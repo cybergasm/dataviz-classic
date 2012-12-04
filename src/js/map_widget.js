@@ -5,12 +5,16 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     mapId: "map",
     mapClass: "mapView",
     filteredDataId: "visiblePlaces",
+    togglePeopleId: "togglePeople",
     zoomAmount: 500,
     initOrigin:[22.8, 38.6],
     initScale:2500,
 
+    withPeople: false, 
+
     initialize: function(options) {
-      _.bindAll(this, 'render', 'cloneMap', 'clip', 'moveMap', 'getId');
+      _.bindAll(this, 'render', 'cloneMap', 'clip', 'moveMap', 'getId',
+        'renderMap');
       
       this.el = $(options.parentElem);
 
@@ -54,9 +58,31 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     },
 
     render: function() {
+      var that = this;
+
       $(this.el).append("<div id=\"" + this.mapId +"\" class=\"" + 
         this.mapClass + "\"></div>");
 
+      // Add a button for toggling people data
+      $("#" + this.mapId, this.el)
+        .append("<input type=\"checkbox\" id=\"" + 
+          this.togglePeopleId + "\" />" + "<label for=\"" + 
+          this.togglePeopleId + "\">Include People Data on Map</label>");
+
+      $("#" + this.togglePeopleId, this.el)
+        .button()
+        .click(function() {
+          that.withPeople = !that.withPeople;
+          that.renderMap();
+        });
+      
+      this.renderMap();
+    },
+
+    renderMap: function(remove) {
+      $("#svg-map" + this.model.get("modelNum"))
+        .remove();
+      
       // Save a reference
       var that = this;
 
@@ -77,11 +103,12 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         .attr("preserveAspectRatio", "xMidYMid")
         .attr("width", width)
         .attr("height", height)
+        .attr("id", "svg-map" + this.model.get("modelNum"))
         .on("click", siteClick);
 
       var map = mapsvg.append("svg:g").attr("class", "map")
         .attr("transform", "translate(2,3)");
-      
+
       embossed = map.selectAll("path.countries")
         .data(dataModule.mapCountries.features)
         .enter().append("svg:path")
@@ -105,7 +132,13 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       that.sites.append("svg:circle")      
         .attr('r', 7)
         .attr("class", "sites")
-        .style("fill", "807E7F")
+        .style("fill", function() {
+          if (that.withPeople) {
+            return "red";
+          } else {
+            return "grey";
+          }
+        })
         .style("stroke", "grey")
         .style("opacity", 0)
         .transition()
