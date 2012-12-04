@@ -119,7 +119,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         .style("stroke-width", 4);
 
       // Save sites so we can chage what is visible later
-      that.sites = map.selectAll("g.sites") 
+      this.sites = map.selectAll("g.sites") 
         .data(dataModule.polisData)
         .enter()
         .append("svg:g")
@@ -129,16 +129,22 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         })
         .style("cursor", "pointer");
 
-      that.sites.append("svg:circle")      
-        .attr('r', 7)
-        .attr("class", "sites")
-        .style("fill", function() {
+      this.sites.append("svg:circle")      
+        .attr('r', function(d) {
           if (that.withPeople) {
-            return "red";
+            var residents = that.dataModule.residencyMap[d['polis_id']];
+            if (residents == undefined) {
+              return 0;
+            } else {
+              var bucketed = d3.scale.log().domain([1, 453]).range([5, 20]);
+              return bucketed(residents.length);
+            }
           } else {
-            return "grey";
+            return 7;
           }
         })
+        .attr("class", "sites")
+        .style("fill", "grey")
         .style("stroke", "grey")
         .style("opacity", 0)
         .transition()

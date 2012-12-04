@@ -67,10 +67,10 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         // PLACE CODES DATA
         // Generates an array where the index is the place id and the value is
         // the place name
-        var placeCodeToName = [];
+        var placeCodeToName = {};
         for(var i = 0; i < that.placeCodesData.length; i++) {
           var placeID = parseInt((that.placeCodesData[i]['id']));
-          placeCodeToName[placeID] = that.placeCodesData[i]['name'];
+          placeCodeToName[placeID] = that.placeCodesData[i];
         }
 
         // PEOPLE DATA
@@ -111,7 +111,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
             for(var j = 0; j < placeCodesArr.length; j++) {
               var currentCode = placeCodesArr[j];
               if(placeCodeToName[parseInt(currentCode)] != undefined) {
-                var name = placeCodeToName[parseInt(currentCode)];
+                var name = placeCodeToName[parseInt(currentCode)]['name'];
                 placeNamesString += (name + ",");
               }
             }
@@ -132,7 +132,35 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         that.peopleData.splice(0,2);
 
         that.allPeopleFieldNames = peopleHeaders;
-      } 
+
+        // Processing of data combining people and places. This will create a 
+        // map between places and the people that have lived there. The places
+        // are the place codes and people are indicies into the people array.
+        that.residencyMap = {};
+
+        for (var i = 0; i < that.peopleData.length; i++){
+          var person = that.peopleData[i];
+          var birthPlace = person["Birthplace_Code"];
+          var placesLived = person["Work/Living_Places_Code"].split(",")
+          
+          if (birthPlace != undefined && birthPlace != 0) {
+            if (that.residencyMap[birthPlace] == undefined) {
+              that.residencyMap[birthPlace] = [];
+            }
+            that.residencyMap[birthPlace].push(i);
+          }
+
+          for (var j = 0; j < placesLived.length; j++) {
+            var placeLived = placesLived[j];
+            if (placesLived != 0) {
+              if (that.residencyMap[placeLived] == undefined) {
+                that.residencyMap[placeLived] = [];
+              }
+              that.residencyMap[placeLived].push(i)
+            }
+          }
+        }
+      }
 
       for (var path in CSV_PATHS) {
         // Javascript wizardy incoming. Since we are in a loop the path in the
