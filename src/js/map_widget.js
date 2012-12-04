@@ -4,13 +4,19 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
 
     mapId: "map",
     svgId: "svg-map",
+    mapAndZoomId: "mapAndZoom",
+    mapAndZoomClass: "mapAndZoom",
     mapClass: "mapView",
     filteredPlacesDataId: "visiblePlaces",
     filteredPeopleDataId: "visiblePeople",
     togglePeopleId: "togglePeople",
-    zoomAmount: 500,
+    zoomSliderId: "zoomSlider",
+    zoomSliderClass: "zoomSlider",
+    zoomAmtId: "zoomAmt",
+    zoomMin:2000,
+    zoomMax:15000,
     initOrigin:[22.8, 38.6],
-    initScale:2500,
+    initZoom:2500,
 
     withPeople: false, 
 
@@ -38,16 +44,20 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       this.filteredPeopleDataId = this.filteredPeopleDataId +
         this.model.get("modelNum");
 
-      this.mapId = this.mapId + this.model.get("modelNum");
-      this.svgId = this.svgId + this.model.get("modelNum");
-      this.togglePeopleId = this.togglePeopleId + this.model.get("modelNum")
+      this.mapId += this.model.get("modelNum");
+      this.svgId += this.model.get("modelNum");
+      this.togglePeopleId += this.model.get("modelNum")
+      this.zoomSliderId += this.model.get("modelNum");
+      this.zoomAmtId += this.model.get("modelNum");
+      this.mapAndZoomId += this.model.get("modelNum");
+
       // Make ourselvs a listener to when the visible places change.
       dataModule.bind("change:" + this.filteredPlacesDataId, 
         updateVisiblePlaces);
       dataModule.bind("change:" + this.filteredPeopleDataId,
         this.updatePeopleDataOnMap);
 
-      this.model.set("map-scale", this.initScale);
+      this.model.set("map-scale", this.initZoom);
       this.model.set("map-origin", this.initOrigin);
       
       // Make ourselves listeners of the map position attributes
@@ -79,6 +89,27 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
           this.togglePeopleId + "\" />" + "<label for=\"" + 
           this.togglePeopleId + "\">Include People Data on Map</label>");
 
+      // Add the map and zooming panel
+      $("#" + this.mapId, this.el)
+        .append("<div id=\"" + this.mapAndZoomId + "\"" + 
+          " class=\"" + this.mapAndZoomClass + "\"></div>");
+
+      // Add a zoom slider
+      $("#" + this.mapAndZoomId, this.el)
+        .append("<div id=\"" + this.zoomSliderId + "\" " + 
+          "class=\"" + this.zoomSliderClass + "\"></div>");
+      
+      $("#" + this.zoomSliderId, this.el)
+        .slider({
+          orientation: "vertical",
+          range: "min",
+          min: this.zoomMin,
+          max: this.zoomMax,
+          value: this.initZoom,
+          slide: function(event, ui) {
+            that.model.set("map-scale", ui.value);
+          }
+        });
       $("#" + this.togglePeopleId, this.el)
         .button()
         .click(function() {
@@ -139,12 +170,12 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       var rankRamp = d3.scale.linear().domain([0,.005]).range([1,10]).clamp(true);
 
       this.projection = d3.geo.azimuthal()
-        .scale(this.initScale)
+        .scale(this.initZoom)
         .origin(this.initOrigin)
         .mode("orthographic")
         .translate([640, 400]);
 
-      var mapsvg = d3.select("#" + this.mapId).append("svg:svg")
+      var mapsvg = d3.select("#" + this.mapAndZoomId).append("svg:svg")
         // The following two attributes allow the map to later be resized.
         .attr("viewBox", "0 0 " + width + " " + height)
         .attr("preserveAspectRatio", "xMidYMid")
@@ -205,10 +236,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         var inverseClick = that.projection.invert(
           [d3.mouse(this)[0], d3.mouse(this)[1]]);
 
-        var modifier = (d3.event.shiftKey ? -1 : 1);
-        var newScale = that.projection.scale() + modifier*that.zoomAmount;
-
-        that.model.set("map-scale", newScale);
         that.model.set("map-origin", inverseClick);
        
         that.moveMap();

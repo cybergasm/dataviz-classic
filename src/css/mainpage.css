@@ -41,6 +41,10 @@ svg {
   margin-left: 20px;
 }
 
+.mapAndZoom {
+  width:1400px;
+}
+
 .binaryForm {
   display: -moz-inline-box;
   display: inline-block;
@@ -69,6 +73,12 @@ svg {
 .loadBox {
   position:relative;
   top:20px;
+  display:inline-block;
+}
+
+.zoomSlider {
+  display:inline-block;
+  height:800px;
 }
 
 #controlbox {
