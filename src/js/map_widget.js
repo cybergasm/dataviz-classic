@@ -73,7 +73,20 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         .button()
         .click(function() {
           that.withPeople = !that.withPeople;
-          that.renderMap();
+          that.sites.selectAll("circle")
+            .attr("r", function(d) {
+              if (that.withPeople) {
+                var residents = that.dataModule.residencyMap[d['polis_id']];
+                if (residents == undefined) {
+                  return 0;
+                } else {
+                  var bucketed = d3.scale.log().domain([1, 453]).range([5, 20]);
+                  return bucketed(residents.length);
+                }
+              } else {
+                return 7;
+              }
+            });
         });
       
       this.renderMap();
@@ -130,19 +143,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         .style("cursor", "pointer");
 
       this.sites.append("svg:circle")      
-        .attr('r', function(d) {
-          if (that.withPeople) {
-            var residents = that.dataModule.residencyMap[d['polis_id']];
-            if (residents == undefined) {
-              return 0;
-            } else {
-              var bucketed = d3.scale.log().domain([1, 453]).range([5, 20]);
-              return bucketed(residents.length);
-            }
-          } else {
-            return 7;
-          }
-        })
+        .attr('r', 7)
         .attr("class", "sites")
         .style("fill", "grey")
         .style("stroke", "grey")
