@@ -34,7 +34,7 @@ svg {
 }
 
 .mapHover {
-  border: 3px solid gray;
+  cursor:pointer;
 }
 
 .mapView {
@@ -57,8 +57,7 @@ svg {
 .savedMap {
   float:left;
   margin:10px;
-  width:600px;
-  height:400px;
+  margin-bottom:0px;
 }
 
 .dataTable {
