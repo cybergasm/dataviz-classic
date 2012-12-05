@@ -50,6 +50,8 @@ define(['backbone', 'data_module'], function(Backbone, dataModule) {
       this.set("peopleBinaryConfig", new peopleBinaryConfigModel());
       this.set("peopleParallelConfig", new peopleParallelConfigModel());
       this.set("peopleCheckboxConfig", new peopleCheckboxConfigModel());
+      this.set("currentEraMin", dataModule.eraMin);
+      this.set("currentEraMax", dataModule.eraMax);
     },
 
     // The following allow a callback to be registered in response to the

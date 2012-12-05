@@ -17,6 +17,9 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     zoomAmtId: "zoomAmt",
     yearSelectorId: "yearSelector",
     yearSelectorClass: "yearSelector",
+    yearSelectorDescriptionClass: "yearSelectorDescription",
+    yearSelectorDescriptionId: "yearSelectorDescription",
+    yearSelectorContainerId: "yearSelectorContainer",
     zoomMin:2000,
     zoomMax:15000,
     initOrigin:[22.8, 38.6],
@@ -26,13 +29,14 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
 
     initialize: function(options) {
       _.bindAll(this, 'render', 'cloneMap', 'clip', 'moveMap', 'getId',
-        'renderMap', 'updatePeopleDataOnMap');
+        'renderMap', 'updatePeopleDataOnMap', 'setYearSelectorVisibility');
       
       this.el = $(options.parentElem);
 
       this.dataModule = dataModule;
-      this.model = options.model;
-
+      this.model = options.placesModel;
+      this.peopleModel = options.peopleModel;  
+      
       var that = this;  
 
       function updateVisiblePlaces() {
@@ -56,6 +60,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       this.mapAndZoomId += this.model.get("modelNum");
       this.zoomContainerId += this.model.get("modelNum");
       this.yearSelectorId += this.model.get("modelNum");
+      this.yearSelectorDescriptionId += this.model.get("modelNum");
+      this.yearSelectorContainerId += this.model.get("modelNum");
 
       // Make ourselvs a listener to when the visible places change.
       dataModule.bind("change:" + this.filteredPlacesDataId, 
@@ -95,6 +101,14 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
           this.togglePeopleId + "\" />" + "<label for=\"" + 
           this.togglePeopleId + "\">Include People Data on Map</label>");
 
+      $("#" + this.togglePeopleId, this.el)
+        .button()
+        .click(function() {
+          that.withPeople = !that.withPeople;
+          that.updatePeopleDataOnMap();        
+          that.setYearSelectorVisibility();
+        });
+
       // Add the map and zooming panel
       $("#" + this.mapId, this.el)
         .append("<div id=\"" + this.mapAndZoomId + "\"" + 
@@ -119,30 +133,45 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
             that.model.set("map-scale", ui.value);
           }
         });
-      $("#" + this.togglePeopleId, this.el)
-        .button()
-        .click(function() {
-          that.withPeople = !that.withPeople;
-          that.updatePeopleDataOnMap();        
-        });
-      
+
       // Add a slider for years
       $("#" + this.mapId, this.el)
-        .append("<span class=\"yearSelectorDescription\">" + 
-          "Select active year range</span>");
-      $("#" + this.mapId, this.el)
+        .append("<div id=\"" + this.yearSelectorContainerId + "\"></div>");
+      $("#" + this.yearSelectorContainerId, this.el)
+        .append("<label for=\"" + this.yearSelectorDescriptionId + "\">" + 
+          "Era range:</label> <input type=\"text\"" + 
+          " id=\"" + this.yearSelectorDescriptionId + "\" " + 
+          "class=\"" + this.yearSelectorDescriptionClass + "\"/>");
+      $("#" + this.yearSelectorContainerId, this.el)
         .append("<div id=\"" + this.yearSelectorId + "\"" + 
           "class=\"" + this.yearSelectorClass + "\"></div>");
       $("#" + this.yearSelectorId, this.el)
         .slider({
           range:true,
-          min:800,
-          max:1800,
-          values: [400, 900]
-        })
-
+          min:this.dataModule.eraMin,
+          max:this.dataModule.eraMax,
+          values: [this.dataModule.eraMin, this.dataModule.eraMax],
+          slide: function(event, ui) {
+            $("#" + that.yearSelectorDescriptionId)
+              .val(+ ui.values[0] + "-" + ui.values[1]);
+            that.peopleModel.set("currentEraMin", ui.values[0]);
+            that.peopleModel.set("currentEraMax", ui.values[1]);
+          }
+        });
+      $("#" + this.yearSelectorDescriptionId)
+        .val($("#" + this.yearSelectorId).slider("values", 0) + "-" + 
+          $("#" + this.yearSelectorId).slider("values", 1));
+      this.setYearSelectorVisibility();
       // Draw map 
       this.renderMap();
+    },
+
+    setYearSelectorVisibility: function() {
+      if (this.withPeople) {
+        $("#" + this.yearSelectorContainerId, this.el).show();
+      } else {
+        $("#" + this.yearSelectorContainerId, this.el).hide();
+      }
     },
 
     updatePeopleDataOnMap: function() {
@@ -300,7 +329,11 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     }
 });
   
-  return function(parent_, model_) {
-    return new mapWidget({parentElem:parent_, model: model_});
+  return function(parent_, placesModel_, peopleModel_) {
+    return new mapWidget({
+      parentElem:parent_,
+      placesModel: placesModel_,
+      peopleModel: peopleModel_
+    });
   }
 });

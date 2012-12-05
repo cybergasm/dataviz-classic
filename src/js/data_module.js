@@ -86,7 +86,11 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         that.peopleBinaryFieldNames = peopleHeaders.filter(function(d) { 
           return that.peopleData[0][d] == "binary";});
 
-        // Add the "endeavors" as text values to the people data
+        // Add the "endeavors" as text values to the people data and figure out 
+        // the min and max for eras.
+        var minEra = 100000;
+        var maxEra = -1;
+
         for(var i = 0; i < that.peopleData.length; i++) {
           var endeavorCodes = that.peopleData[i]['Endeavor_codes'];
           var endeavorCodesArr = (endeavorCodes).split(",");        
@@ -98,7 +102,18 @@ define(['backbone', 'd3'], function (Backbone, d3) {
             }
           }
           that.peopleData[i]['Endeavors'] = endeavorNames;
+        
+          var era = parseInt(that.peopleData[i]["Era"]);
+          if (!isNaN(era)) {
+            if (era > maxEra) {
+              maxEra = era;
+            } else if (era < minEra) {
+              minEra = era;
+            }
+          }
         }
+        that.eraMin = minEra;
+        that.eraMax = maxEra;
 
         var fieldsToFix = ["Work/Living_Places", "Birthplace"];
         for(var n = 0; n < fieldsToFix.length; n++){
@@ -281,6 +296,15 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           }
         }*/
 
+        // Check era.
+        var curEra = parseInt(toCheck["Era"]);
+        if (!isNaN(curEra)) {
+          if (curEra < peopleConfigModel.get("currentEraMin") || 
+              curEra > peopleConfigModel.get("currentEraMax")) {
+            return false;
+          }
+        }
+
         return true;
       }
 
@@ -300,6 +324,8 @@ define(['backbone', 'd3'], function (Backbone, d3) {
 
       // Register to listen to changes in person configuration
       peopleConfigModel.listenToPeopleConfigChanges(filterPeopleData);
+      peopleConfigModel.bind("change:currentEraMin", filterPeopleData);
+      peopleConfigModel.bind("change:currentEraMax", filterPeopleData);
 
       // Set the visible people to the whole data set after creating an initial
       // id to people map.
@@ -391,7 +417,6 @@ define(['backbone', 'd3'], function (Backbone, d3) {
             return false;
           }
         }
-
         return true;
       }
 
@@ -414,7 +439,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
       mapConfigModel.listenToMapConfigChanges(updateStateString);
       mapConfigModel.bind("change:map-origin", updateStateString);
       mapConfigModel.bind("change:map-scale", updateStateString);
-
+      
       // Set the visible places to the whole data set.
       this.set("visiblePlaces" + mapConfigModel.get("modelNum"), 
         this.polisData);

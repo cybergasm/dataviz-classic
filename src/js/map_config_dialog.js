@@ -144,7 +144,8 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
     // Renders the different data displays into a tab view on top of the 
     // dialog.
     renderDataViews: function() {
-      this.mapWidget = mapWidgetFactory("#" + this.viewsId, this.model);
+      this.mapWidget = mapWidgetFactory("#" + this.viewsId, this.model, 
+        this.peopleModel);
       $("#" + this.dataViewsList, this.el)
         .append("<li><a href=\"#" + this.mapWidget.getId() + "\">" +
           "Countries Map</a></li>");
