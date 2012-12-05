@@ -136,12 +136,6 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.checkboxesWidget.getId() + "\">" +
           "Toggle Paramters</a></li>");
-
-      this.dataTableWidget = dataTableWidgetFactory("#" + this.tabsId,
-        this.model);
-      $("#" + this.tabsContentList, this.el)
-        .append("<li><a href=\"#" + this.dataTableWidget.getId() + "\">" +
-          "Table of Cities</a></li>");
       
       this.peopleBinaryBoxesWidget = peopleBinaryBoxesWidgetFactory("#" + 
         this.tabsId, this.peopleModel);
@@ -169,6 +163,12 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       $("#" + this.dataViewsList, this.el) 
         .append("<li><a href=\"#" + this.peopleList.getId() + "\">" +
           "People</a></li>");;
+
+      this.dataTableWidget = dataTableWidgetFactory("#" + this.viewsId,
+        this.model);
+      $("#" + this.dataViewsList, this.el)
+        .append("<li><a href=\"#" + this.dataTableWidget.getId() + "\">" +
+          "Table of Cities</a></li>");
     },
 
     // Adds a dialog div and configures it to be hidden.
