@@ -75,18 +75,21 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
 
         // Check to see what type the field is, then update the data model
         // to reflect the value of the field
-        if(that.parallelFieldNames.indexOf(currentFieldName) != -1) { 
+        if(this.dataModule.parallelFieldNames.indexOf(currentFieldName) 
+            != -1) { 
           var minAndMaxValues = currentFieldValues.split('-');
           this.model.get("parallelConfig").set(currentFieldName , {
             min:parseFloat(minAndMaxValues[0]),
             max:parseFloat(minAndMaxValues[1])
           })
-        } else if(that.binaryFieldNames.indexOf(currentFieldName) != -1) {
+        } else if(this.dataModule.binaryFieldNames.indexOf(currentFieldName) 
+            != -1) {
           var yesAndNoValues = currentFieldValues.split('-');
           this.model.get("binaryConfig").set(currentFieldName, 
             [yesAndNoValues[0] == "true", yesAndNoValues[1] == "true"]);
         } else if(currentFieldName.indexOf("-") != -1 &&
-            that.checkboxFieldNames.indexOf((currentFieldName.split('-'))[0]) 
+            this.dataModule.checkboxFieldNames.indexOf(
+              (currentFieldName.split('-'))[0]) 
             != -1) {
           var valueToSet = (currentFieldValues == "true");
           this.model.get("checkboxConfig").set(currentFieldName, valueToSet);
@@ -96,6 +99,17 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
           var origin = currentFieldValues.split('-');
           this.model.set("map-origin", 
             [parseFloat(origin[0]), parseFloat(origin[1])]);
+        } else if(this.dataModule.peopleBinaryFieldNames.indexOf(
+            currentFieldName) != -1) {
+          var yesAndNoValues = currentFieldValues.split('-');
+          this.peopleModel.get("peopleBinaryConfig").set(currentFieldName,
+            [yesAndNoValues[0] == "true", yesAndNoValues[1] == "true"]);
+        } else if(currentFieldName == "eraMin") {
+          var val = parseInt(currentFieldValues);
+          this.peopleModel.set("currentEraMin", val);
+        } else if(currentFieldName == "eraMax") {
+          var val = parseInt(currentFieldValues);
+          this.peopleModel.set("currentEraMax", val);
         }
       }
     },
@@ -135,7 +149,8 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         .append("<li><a href=\"#" + this.peopleBinaryBoxesWidget.getId() + 
           "\">" + "People Toggle</a></li>");
 
-      this.exportWidget = exportWidgetFactory("#" + this.tabsId, this.model);
+      this.exportWidget = exportWidgetFactory("#" + this.tabsId, this.model,
+        this.peopleModel);
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.exportWidget.getId() + "\">" +
           "Export</a></li>");

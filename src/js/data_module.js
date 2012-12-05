@@ -326,6 +326,9 @@ define(['backbone', 'd3'], function (Backbone, d3) {
       peopleConfigModel.listenToPeopleConfigChanges(filterPeopleData);
       peopleConfigModel.bind("change:currentEraMin", filterPeopleData);
       peopleConfigModel.bind("change:currentEraMax", filterPeopleData);
+      peopleConfigModel.listenToPeopleConfigChanges(updateStateString);
+      peopleConfigModel.bind("change:currentEraMin", updateStateString);
+      peopleConfigModel.bind("change:currentEraMax", updateStateString);
 
       // Set the visible people to the whole data set after creating an initial
       // id to people map.
@@ -335,6 +338,27 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         idToPerson[that.peopleData[i].unique_id] = that.peopleData[i];
       }
       this.set("visiblePeople" + peopleConfigModel.get("modelNum"), idToPerson);
+
+      // Updates string to save people configuration
+      function updateStateString() {
+        var myStateString = "";
+
+        // Check binary fields
+        for(var i = 0; i < that.peopleBinaryFieldNames.length; i++) {
+          var bFieldName = that.peopleBinaryFieldNames[i];
+          var curBinaryField = 
+            peopleConfigModel.get("peopleBinaryConfig").get(bFieldName);
+          if(curBinaryField[0] != true || curBinaryField[1] != true) {
+            myStateString = myStateString + bFieldName + "=" + 
+              curBinaryField[0] + "-" + curBinaryField[1] + ",";
+          }
+        }
+
+        // Save era range
+        myStateString += "eraMin=" + peopleConfigModel.get("currentEraMin") +
+        ",eraMax=" + peopleConfigModel.get("currentEraMax") + ",";
+        peopleConfigModel.set("peopleStateString", myStateString);
+      }
 
     },   
 
@@ -495,7 +519,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           myStateString += "map-scale=" + mapScale + ",";
         }
 
-        mapConfigModel.set("stateString", myStateString);
+        mapConfigModel.set("mapStateString", myStateString);
       } 
     }  
   });

@@ -49,7 +49,7 @@ define(['backbone', 'data_module'], function(Backbone, dataModule) {
       this.set("binaryConfig", new binaryConfigModel());
       this.set("parallelConfig", new parallelConfigModel());
       this.set("checkboxConfig", new checkboxConfigModel());
-      this.set("stateString", "");
+      this.set("mapStateString", "");
     },
 
     // The following allow a callback to be registered in response to the

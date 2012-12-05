@@ -10,18 +10,21 @@ define(['backbone', 'jquery-ui', 'data_module'],
       _.bindAll(this, 'render', 'getId');
 
       this.el = $(options.parent);
-      this.model = options.model;
+      this.placesModel = options.placesModel;
+      this.peopleModel = options.peopleModel;
 
-      this.textAreaId = this.textAreaId + this.model.get("modelNum");
+      this.textAreaId = this.textAreaId + this.placesModel.get("modelNum");
 
       var that = this;
 
       function updateExportString() {
         $("#" + that.textAreaId)
-          .val(that.model.get("stateString"));
+          .val(that.placesModel.get("mapStateString") + 
+            that.peopleModel.get("peopleStateString"));
       }
       
-      this.model.bind("change:stateString", updateExportString);
+      this.placesModel.bind("change:mapStateString", updateExportString);
+      this.peopleModel.bind("change:peopleStateString", updateExportString);
       
       this.render();
     },
@@ -44,7 +47,10 @@ define(['backbone', 'jquery-ui', 'data_module'],
 
   });
 
-  return function(parent_, model_) {
-    return new exportWidget({parent:parent_, model:model_});
+  return function(parent_, placesModel_, peopleModel_) {
+    return new exportWidget({
+      parent: parent_,
+      placesModel: placesModel_,
+      peopleModel: peopleModel_});
   }
 });

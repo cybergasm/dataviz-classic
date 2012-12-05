@@ -52,6 +52,7 @@ define(['backbone', 'data_module'], function(Backbone, dataModule) {
       this.set("peopleCheckboxConfig", new peopleCheckboxConfigModel());
       this.set("currentEraMin", dataModule.eraMin);
       this.set("currentEraMax", dataModule.eraMax);
+      this.set("peopleStateString", "");
     },
 
     // The following allow a callback to be registered in response to the
