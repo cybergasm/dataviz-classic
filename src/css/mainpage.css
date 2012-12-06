@@ -88,11 +88,23 @@ svg {
 .zoomWidget {
   float:left;
   margin-right:10px;
+
+  position:relative;
+  top:-40px;
 }
 
 .zoomSlider {
   height:800px;
   margin-left:10px;
+}
+
+.zoomLabel {
+  margin-bottom: -20px;
+  margin-top: 35px;
+}
+
+.zoomLabel p {
+  margin-top:-15px;
 }
 
 .yearSelector { 

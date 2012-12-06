@@ -10,6 +10,9 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     // Used in calculating dimensions
     m: [30, 10, 10, 10],
 
+    // How to discretize ranges
+    rangeIncrements: 10,
+
     // Taken from the colorbrewer project
     // https://github.com/mbostock/d3/blob/master/lib/colorbrewer/colorbrewer.js
     RdBu:{3:["rgb(239,138,98)","rgb(247,247,247)","rgb(103,169,207)"],4:["rgb(202,0,32)","rgb(244,165,130)","rgb(146,197,222)","rgb(5,113,176)"],5:["rgb(202,0,32)","rgb(244,165,130)","rgb(247,247,247)","rgb(146,197,222)","rgb(5,113,176)"],6:["rgb(178,24,43)","rgb(239,138,98)","rgb(253,219,199)","rgb(209,229,240)","rgb(103,169,207)","rgb(33,102,172)"],7:["rgb(178,24,43)","rgb(239,138,98)","rgb(253,219,199)","rgb(247,247,247)","rgb(209,229,240)","rgb(103,169,207)","rgb(33,102,172)"],8:["rgb(178,24,43)","rgb(214,96,77)","rgb(244,165,130)","rgb(253,219,199)","rgb(209,229,240)","rgb(146,197,222)","rgb(67,147,195)","rgb(33,102,172)"],9:["rgb(178,24,43)","rgb(214,96,77)","rgb(244,165,130)","rgb(253,219,199)","rgb(247,247,247)","rgb(209,229,240)","rgb(146,197,222)","rgb(67,147,195)","rgb(33,102,172)"],10:["rgb(103,0,31)","rgb(178,24,43)","rgb(214,96,77)","rgb(244,165,130)","rgb(253,219,199)","rgb(209,229,240)","rgb(146,197,222)","rgb(67,147,195)","rgb(33,102,172)","rgb(5,48,97)"],11:["rgb(103,0,31)","rgb(178,24,43)","rgb(214,96,77)","rgb(244,165,130)","rgb(253,219,199)","rgb(247,247,247)","rgb(209,229,240)","rgb(146,197,222)","rgb(67,147,195)","rgb(33,102,172)","rgb(5,48,97)"]},
@@ -32,7 +35,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       var that = this;
       
       function updateViewWithSelected() {
-        that.foreground.style("display", function(d, i) { 
+        that.foreground.style("display", function(d, i) {
           // Check if the currently visible places have an entry for this data
           // point
           return (dataModule.get(that.filteredDataId)[d['name']] ? null : 
@@ -62,6 +65,44 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       }
 
       this.model.bind("change:colorBasedOn", resetColors);
+
+      function updateColorRange() {
+        // Update the range colors given new selected range.
+        var curColoring = that.model.get("colorBasedOn");
+        var type = curColoring.split("-")[0];
+        var name = curColoring.split("-")[1];
+
+        if (type == "parallel") {
+          var curRange = that.model.get("parallelConfig").get(name);
+          // We have a selection in this range.
+          if (curRange.max < 1000000) {
+            var newRange = [];
+            var delta = (curRange.max - curRange.min) / that.rangeIncrements;
+
+            for (var i = 0; i <= that.rangeIncrements; i++) {
+              newRange.push(curRange.min + delta*i);
+            }
+            
+            var color = d3.scale.linear()
+              .domain(newRange)
+              .range(that.RdBu[that.rangeIncrements]);
+            
+            that.model.set("parallelColorRange", color);
+            that.model.trigger("change:colorBasedOn");
+
+            // Set color of paths
+            that.foreground.selectAll("path")
+              .forEach(function(d,i) {
+                // This is a little jank, but the alternative of .style("stroke")
+                // would not work
+                d.parentNode.style.stroke = color(
+                  d.parentNode.__data__[name]);
+              });
+          }
+        }
+      }
+
+      this.model.listenToMapParallelConfigChanges(updateColorRange);
 
       this.w = 1080 - this.m[1] - this.m[3];
       this.h = 300 - this.m[0] - this.m[2];
@@ -189,19 +230,24 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
           // Discretize our continuous range so we can get color
           var range = that.y[clickedElement].domain();
-          // How many discretization points
-          var rangeIncrements = 10;
+
+          var curRange = that.model.get("parallelConfig").get(clickedElement);
+          // We have a selection in this range.
+          if (curRange.max < 1000000) {
+            range[0] = curRange.min;
+            range[1] = curRange.max;
+          }
 
           // Go along the range and create new range at each discretization
           // point
-          var delta = range[1] / rangeIncrements;
+          var delta = (range[1] - range[0]) / that.rangeIncrements;
           var newRange = [];
-          for (var i = 0; i <= rangeIncrements; i++) {
+          for (var i = 0; i <= that.rangeIncrements; i++) {
             newRange.push(range[0] + delta * i);
           }
           var color = d3.scale.linear()
             .domain(newRange)
-            .range(that.RdBu[rangeIncrements]);
+            .range(that.RdBu[that.rangeIncrements]);
           
           // Set color of paths
           that.foreground.selectAll("path")

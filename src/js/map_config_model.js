@@ -52,6 +52,7 @@ define(['backbone', 'data_module'], function(Backbone, dataModule) {
       this.set("mapStateString", "");
       this.set("binary-yes", "#76BBFC");
       this.set("binary-no", "#88CCA0");
+      this.set("colorBasedOn", "");
     },
 
     // The following allow a callback to be registered in response to the

@@ -15,6 +15,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     zoomContainerClass: "zoomWidget",
     zoomContainerId: "zoomWidget",
     zoomAmtId: "zoomAmt",
+    zoomLabel: "zoomLabel",
     yearSelectorId: "yearSelector",
     yearSelectorClass: "yearSelector",
     yearSelectorDescriptionClass: "yearSelectorDescription",
@@ -59,6 +60,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       this.zoomAmtId += this.model.get("modelNum");
       this.mapAndZoomId += this.model.get("modelNum");
       this.zoomContainerId += this.model.get("modelNum");
+      this.zoomLabel += this.model.get("modelNum");
       this.yearSelectorId += this.model.get("modelNum");
       this.yearSelectorDescriptionId += this.model.get("modelNum");
       this.yearSelectorContainerId += this.model.get("modelNum");
@@ -137,13 +139,20 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
           " class=\"" + this.mapAndZoomClass + "\"></div>");
       $("#" + this.mapAndZoomId, this.el)
         .append("<div id=\"" + this.zoomContainerId + "\" " + 
-          "class=\"" + this.zoomContainerClass + "\"><span>Zoom</span></div>");
+          "class=\"" + this.zoomContainerClass + "\">" + 
+          "<div id=\"" + this.zoomLabel + "\"" + 
+          "class=\"zoomLabel\">Zoom</div></div>");
 
       // Add a zoom slider
       $("#" + this.zoomContainerId, this.el)
         .append("<div id=\"" + this.zoomSliderId + "\" " + 
           "class=\"" + this.zoomSliderClass + "\"></div>");
       
+      function getZoomPercent(val) {
+        var range = that.zoomMax - that.zoomMin;
+        var curVal = val - that.zoomMin;
+        return Math.floor(curVal / range * 100);
+      }
       $("#" + this.zoomSliderId, this.el)
         .slider({
           orientation: "vertical",
@@ -153,9 +162,15 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
           value: this.initZoom,
           slide: function(event, ui) {
             that.model.set("map-scale", ui.value);
+            $("#" + that.zoomLabel)
+              .html("<p>Zoom</p> <p>" + getZoomPercent(ui.value) + "%</p>");
           }
         });
+        var zoomVal = $("#" + this.zoomSliderId, this.el)
+          .slider("value");
 
+        $("#" + that.zoomLabel)
+              .html("<p>Zoom</p> <p>" + getZoomPercent(zoomVal) + "%</p>");
       // Add a slider for years
       $("#" + this.mapId, this.el)
         .append("<div id=\"" + this.yearSelectorContainerId + "\"></div>");
@@ -260,13 +275,15 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         .attr("id", this.svgId)
         .on("click", siteClick);
 
-      var map = mapsvg.append("svg:g").attr("class", "map")
+      var map = mapsvg.append("svg:g")
+        .attr("class", "map")
+        .attr("id", "mapsvgid" + this.model.get("modelNum"))
         .attr("transform", "translate(2,3)");
 
       embossed = map.selectAll("path.countries")
         .data(dataModule.mapCountries.features)
         .enter().append("svg:path")
-        .attr("d", that.clip)
+        .attr("d", this.clip)
         .attr("class", "countries")
         .style("fill", "#E8E8E8")
         .style("stroke", "#C4C2C3")
@@ -280,8 +297,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         .attr("class", "foreground")
         .attr("transform", function(d) {
           return "translate(" + that.projection([d.  xcoord,d.ycoord]) + ")";
-        })
-        .style("cursor", "pointer");
+        });
 
       this.sites.append("svg:circle")      
         .attr('r', 7)
@@ -330,7 +346,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
 
     moveMap: function() {
       this.projection.origin(this.model.get("map-origin"));
-
       this.projection.scale(this.model.get("map-scale"));
 
       var that = this;
