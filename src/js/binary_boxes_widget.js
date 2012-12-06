@@ -132,15 +132,19 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           .css("color", this.model.get("binary-yes"));
         $(".yes-label")
           .css("color", this.model.get("binary-no"));
-          
+
         $("#" + dataModule.binaryFieldNames[i])
           .append("<div id=\"" + dataModule.binaryFieldNames[i] + 
-            "-colorButton\">Use to color map</div>");
+            "-colorButton\">Toggle color on map</div>");
         $("#" + dataModule.binaryFieldNames[i] + "-colorButton")
           .button()
           .click(function(event) {
             var toColor = event.target.parentNode.id.split("-")[0];
-            that.model.set("colorBasedOn", toColor);            
+            if (that.model.get("colorBasedOn") == toColor) {
+              that.model.set("colorBasedOn", "");
+              return;
+            }
+            that.model.set("colorBasedOn", toColor); 
           });
       }  
       // This goes through each of the labels and figures out which is the 

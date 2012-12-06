@@ -77,9 +77,12 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       this.model.bind("change:map-origin", this.moveMap);
 
       function updateColor() {
-        console.log("Color updating...");
         that.sites.selectAll("circle").style("fill", function(d, i) {
           var toColorOn = that.model.get("colorBasedOn");
+          if (toColorOn == "") {
+            return "grey";
+          }
+
           if (d[toColorOn] == 1) {
             return that.model.get("binary-yes");
           } else {
