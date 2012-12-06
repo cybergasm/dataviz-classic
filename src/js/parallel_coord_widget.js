@@ -77,7 +77,9 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
     // Draws the parallel coordinates on screen
     render: function() {
-      $(this.el).append("<div id=\"" + this.svgId +"\"></div>");
+      $(this.el).append("<div id=\"" + this.svgId +"\">" + 
+        "You can click on a heading to color points based on that parameter." + 
+        "</div>");
 
       var svg = d3.select("#" + this.svgId).append("svg:svg")
         .attr("width", this.w + this.m[1] + this.m[3])
