@@ -108,6 +108,24 @@ svg {
   margin-bottom:10px;
   margin-left:15%;
 }
+
+.peopleCheckboxAccordionButton {  
+  width: 800px;
+  float: left;
+  background: #003366;
+  border-bottom: 1px solid #FFFFFF;
+  cursor: pointer;
+  }
+
+.peopleCheckboxAccordionContent { 
+  width: 800px;
+  height: 500px;
+  overflow: scroll;
+  float: left;
+  background: #95B1CE;
+  display: none;
+  }
+
 /*#main {
   border:2px solid gray;
   margin:0 auto;

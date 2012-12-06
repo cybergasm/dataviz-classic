@@ -3,12 +3,14 @@
 define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget', 
   'checkboxes_widget', 'map_widget', 'data_module', 'map_config_model', 
   'data_table_widget', 'export_widget', 'map_comparison_model', 
-  'people_binary_boxes_widget', 'people_list', 'people_config_model'], 
+  'people_binary_boxes_widget', 'people_list', 'people_config_model',
+  'people_checkboxes_widget'], 
     function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, 
       checkboxesWidgetFactory, mapWidgetFactory, dataModule, 
       mapConfigModelFactory, dataTableWidgetFactory, exportWidgetFactory,
       mapComparisonModelEditor, peopleBinaryBoxesWidgetFactory, 
-      peopleListFactory, peopleConfigModelFactory) {
+      peopleListFactory, peopleConfigModelFactory, 
+      peopleCheckboxesWidgetFactory) {
   
     var dialogView = Backbone.View.extend( {
     
@@ -149,6 +151,12 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.exportWidget.getId() + "\">" +
           "Export</a></li>");
+
+      this.peopleCheckboxesWidget = peopleCheckboxesWidgetFactory("#" + 
+        this.tabsId, this.peopleModel);
+      $("#" + this.tabsContentList, this.el)
+        .append("<li><a href=\"#" + this.peopleCheckboxesWidget.getId() + "\">" 
+          + "People Checkboxes</a></li>");  
     },
 
     // Renders the different data displays into a tab view on top of the 

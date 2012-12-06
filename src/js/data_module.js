@@ -6,7 +6,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
   
   var CSV_PATHS = {
     "polisData": "../../data/polis_10_12.csv",
-    "peopleData": "../../data/people_full_1.csv",
+    "peopleData": "../../data/people_full_2.csv",
     "endeavorData": "../../data/endeavor_categories.csv",
     "placeCodesData": "../../data/placecodes.csv",
   };
@@ -58,7 +58,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         // category
         var endeavorInformation = {};
         for(var i = 0; i < that.endeavorData.length; i++) {
-          var info = new Array();
+          var info = {};
           info['name'] = that.endeavorData[i]['name'];
           info['category'] = that.endeavorData[i]['category'];
           endeavorInformation[that.endeavorData[i]['id']] = info;
@@ -85,6 +85,20 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           return that.peopleData[0][d] == "parallel";});
         that.peopleBinaryFieldNames = peopleHeaders.filter(function(d) { 
           return that.peopleData[0][d] == "binary";});
+
+        // Get set of possible values for every checkbox field name
+        that.peopleCheckboxFieldValues  = {};
+
+        for (var i = 0; i < that.peopleCheckboxFieldNames.length; i++) {
+          var curName = that.peopleCheckboxFieldNames[i];
+          that.peopleCheckboxFieldValues[curName] = 
+            that.peopleData[1][curName].split(',');
+        }
+
+        // Gets rid of the header rows
+        that.peopleData.splice(0,2);
+
+        that.allPeopleFieldNames = peopleHeaders;
 
         // Add the "endeavors" as text values to the people data and figure out 
         // the min and max for eras.
@@ -115,7 +129,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         that.eraMin = minEra;
         that.eraMax = maxEra;
 
-        var fieldsToFix = ["Work/Living_Places", "Birthplace"];
+        var fieldsToFix = ["Work_Living_Places", "Birthplace"];
         for(var n = 0; n < fieldsToFix.length; n++){
           var fieldName = fieldsToFix[n];
           var numberFieldName = fieldName + "_Code";
@@ -134,19 +148,6 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           }
         }
 
-        // Get set of possible values for every checkbox field name
-        that.peopleCheckboxFieldValues  = {};
-
-        for (var i = 0; i < that.peopleCheckboxFieldNames.length; i++) {
-          var curName = that.peopleCheckboxFieldNames[i];
-          that.peopleCheckboxFieldValues[curName] = 
-            that.peopleData[1][curName].split(',');
-        }
-
-        // Gets rid of the header rows
-        that.peopleData.splice(0,2);
-
-        that.allPeopleFieldNames = peopleHeaders;
 
         // Processing of data combining people and places. This will create a 
         // map between places and the people that have lived there. The places
@@ -156,7 +157,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
         for (var i = 0; i < that.peopleData.length; i++){
           var person = that.peopleData[i];
           var birthPlace = person["Birthplace_Code"];
-          var placesLived = person["Work/Living_Places_Code"].split(",")
+          var placesLived = person["Work_Living_Places_Code"].split(",")
           
           if (birthPlace != undefined && birthPlace != 0) {
             if (that.residencyMap[birthPlace] == undefined) {
