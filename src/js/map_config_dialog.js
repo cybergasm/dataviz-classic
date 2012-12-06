@@ -68,6 +68,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
     // string
     reloadMapFromString: function(stateString) {
       var myFields = stateString.split(',');
+      console.log("RELOADING")
       for (var i = 0; i < myFields.length; i++) {
         var fieldData = myFields[i].split('=');
         var currentFieldName = fieldData[0];
