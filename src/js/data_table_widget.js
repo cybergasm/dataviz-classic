@@ -69,7 +69,65 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'datatable'],
         .attr("id", this.tableId + "-table");
 
       var thead = table.append("thead"),
-        tbody = table.append("tbody");
+        tbody = table.append("tbody")
+          .attr("id", this.tableId + "-tbody");
+
+      // This will list the poeple associated with the clicked place
+      $("#" + this.tableId + "-tbody", this.el)
+        .click(function (event) {
+          // Grab the polis_id of the clicked city. This is a little jank as
+          // it depends on the id being in the table. If this becomes a problem
+          // can move it to class.
+          var target = 
+            $(event.target.parentNode)
+              .children('td')
+              .eq(1)[0]
+              .innerText
+          target = parseInt(target);
+          
+          // Get all people known to live here
+          var residents = that.dataModule.residencyMap[target];
+          var listId = "list-elem" + that.model.get("modelNum") + 
+            "-" + target;
+
+          // Make sure previous list does not exist
+          if ($("#" + listId).length != 0) {
+            $("#" + listId)
+              .remove();
+            return;
+          }
+
+          var list = "<tr id=\"" + listId + "\"><td colspan=\"8\">";
+          if (residents == undefined) {
+            // If no residents
+            $(event.target.parentNode)
+              list += "<h1>No residents</h1>";
+          } else {
+            var residentList = "<ul class=\"personList\">";
+            var curVisible = that.dataModule.get("visiblePeople" + 
+              that.model.get("modelNum"));
+
+            // This tracks how many of our residents are still visible
+            var peopleStillVisible = 0;
+            for (var i = 0; i < residents.length; i++) {
+              var curResident = that.dataModule.peopleData[residents[i]];
+              if (curVisible[curResident['unique_id']] != undefined) {
+                residentList += "<li>" + curResident['Primary_Name'] + "</li>";
+                peopleStillVisible++;
+              }
+            }
+            residentList += "</ul>"
+            if (peopleStillVisible > 0) {
+              list += residentList;
+            } else {
+              list += "<h1>No residents</h1>";
+            }
+          }
+          
+          list += "</td></tr>";
+          $(event.target.parentNode)
+              .after(list);          
+        });
 
       thead.append("tr")
         .selectAll("th")
