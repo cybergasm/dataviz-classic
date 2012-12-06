@@ -91,7 +91,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .text(fieldName)
         .attr("for", function(d) {
           return d + "-yes-" + that.model.get("modelNum");
-        });
+        })
+        .attr("class", "yes-label");
       binaryBoxes.append("input")
         .attr("class", "binaryBox")
         .attr("type", "checkbox")
@@ -107,7 +108,9 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         })
         .attr("for", function(d) {
           return d + "-no-" + that.model.get("modelNum");
-        });
+        })
+        .attr("class", "no-label");
+
       binaryBoxes.append("input")
         .attr("class", "binaryBox")
         .attr("type", "checkbox")
@@ -123,6 +126,23 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           .buttonset();
       }
 
+      // Make each set of options a jquery buttonset
+      for (var i = 0; i < dataModule.binaryFieldNames.length; i++) {
+        $(".no-label")
+          .css("color", this.model.get("binary-yes"));
+        $(".yes-label")
+          .css("color", this.model.get("binary-no"));
+          
+        $("#" + dataModule.binaryFieldNames[i])
+          .append("<div id=\"" + dataModule.binaryFieldNames[i] + 
+            "-colorButton\">Use to color map</div>");
+        $("#" + dataModule.binaryFieldNames[i] + "-colorButton")
+          .button()
+          .click(function(event) {
+            var toColor = event.target.parentNode.id.split("-")[0];
+            that.model.set("colorBasedOn", toColor);            
+          });
+      }  
       // This goes through each of the labels and figures out which is the 
       // longest and then sets this width on all of them for uniformity
       //

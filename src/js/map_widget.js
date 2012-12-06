@@ -76,6 +76,19 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       this.model.bind("change:map-scale", this.moveMap);
       this.model.bind("change:map-origin", this.moveMap);
 
+      function updateColor() {
+        console.log("Color updating...");
+        that.sites.selectAll("circle").style("fill", function(d, i) {
+          var toColorOn = that.model.get("colorBasedOn");
+          if (d[toColorOn] == 1) {
+            return that.model.get("binary-yes");
+          } else {
+            return that.model.get("binary-no");
+          }
+        });
+      }
+
+      this.model.bind("change:colorBasedOn", updateColor);
       this.render();
     },
 
