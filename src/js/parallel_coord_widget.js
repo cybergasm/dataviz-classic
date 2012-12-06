@@ -10,6 +10,10 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     // Used in calculating dimensions
     m: [30, 10, 10, 10],
 
+    // Taken from the colorbrewer project
+    // https://github.com/mbostock/d3/blob/master/lib/colorbrewer/colorbrewer.js
+    RdBu:{3:["rgb(239,138,98)","rgb(247,247,247)","rgb(103,169,207)"],4:["rgb(202,0,32)","rgb(244,165,130)","rgb(146,197,222)","rgb(5,113,176)"],5:["rgb(202,0,32)","rgb(244,165,130)","rgb(247,247,247)","rgb(146,197,222)","rgb(5,113,176)"],6:["rgb(178,24,43)","rgb(239,138,98)","rgb(253,219,199)","rgb(209,229,240)","rgb(103,169,207)","rgb(33,102,172)"],7:["rgb(178,24,43)","rgb(239,138,98)","rgb(253,219,199)","rgb(247,247,247)","rgb(209,229,240)","rgb(103,169,207)","rgb(33,102,172)"],8:["rgb(178,24,43)","rgb(214,96,77)","rgb(244,165,130)","rgb(253,219,199)","rgb(209,229,240)","rgb(146,197,222)","rgb(67,147,195)","rgb(33,102,172)"],9:["rgb(178,24,43)","rgb(214,96,77)","rgb(244,165,130)","rgb(253,219,199)","rgb(247,247,247)","rgb(209,229,240)","rgb(146,197,222)","rgb(67,147,195)","rgb(33,102,172)"],10:["rgb(103,0,31)","rgb(178,24,43)","rgb(214,96,77)","rgb(244,165,130)","rgb(253,219,199)","rgb(209,229,240)","rgb(146,197,222)","rgb(67,147,195)","rgb(33,102,172)","rgb(5,48,97)"],11:["rgb(103,0,31)","rgb(178,24,43)","rgb(214,96,77)","rgb(244,165,130)","rgb(253,219,199)","rgb(247,247,247)","rgb(209,229,240)","rgb(146,197,222)","rgb(67,147,195)","rgb(33,102,172)","rgb(5,48,97)"]},
+
     y: {},
     dragging: {},
 
@@ -41,6 +45,23 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
       // Make ourselvs a listener to when the visible places change.
       dataModule.bind("change:" + this.filteredDataId, updateViewWithSelected);
+
+      function resetColors() {
+        var typeOfColor = that.model.get("colorBasedOn").split("-")[0];
+        if (typeOfColor == "parallel") {
+          return;
+        }
+
+        // Set color of paths
+        that.foreground.selectAll("path")
+          .forEach(function(d,i) {
+            // This is a little jank, but the alternative of .style("stroke")
+            // would not work
+            d.parentNode.style.stroke = "#e04242";
+          });
+      }
+
+      this.model.bind("change:colorBasedOn", resetColors);
 
       this.w = 1080 - this.m[1] - this.m[3];
       this.h = 300 - this.m[0] - this.m[2];
@@ -128,7 +149,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .selectAll("path")
         .data(dataModule.polisData)
         .enter().append("svg:path")
-        .attr("d", path);
+        .attr("d", path)
+        .style("stroke", "#e04242");
 
       // Add a group element for each dimension.
       this.g = svg.selectAll(".dimension" + this.model.get("modelNum"))
@@ -147,8 +169,49 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .append("svg:text")
         .attr("text-anchor", "middle")
         .attr("y", -9)
-        .text(String);
+        .text(String)
+        .on("click", function(clickedElement) {
+          // Check if we are resetting
+          if (("parallel-" + clickedElement) == 
+              that.model.get("colorBasedOn")) {
+            // Set color of paths
+            that.foreground.selectAll("path")
+              .forEach(function(d,i) {
+                // This is a little jank, but the alternative of .style("stroke")
+                // would not work
+                d.parentNode.style.stroke = "#e04242";
+            });
+            that.model.set("colorBasedOn", "");
+            return;
+          }
 
+          // Discretize our continuous range so we can get color
+          var range = that.y[clickedElement].domain();
+          // How many discretization points
+          var rangeIncrements = 10;
+
+          // Go along the range and create new range at each discretization
+          // point
+          var delta = range[1] / rangeIncrements;
+          var newRange = [];
+          for (var i = 0; i <= rangeIncrements; i++) {
+            newRange.push(range[0] + delta * i);
+          }
+          var color = d3.scale.linear()
+            .domain(newRange)
+            .range(that.RdBu[rangeIncrements]);
+          
+          // Set color of paths
+          that.foreground.selectAll("path")
+            .forEach(function(d,i) {
+              // This is a little jank, but the alternative of .style("stroke")
+              // would not work
+              d.parentNode.style.stroke = color(
+                d.parentNode.__data__[clickedElement]);
+            });
+          that.model.set("parallelColorRange", color);
+          that.model.set("colorBasedOn", "parallel-" + clickedElement);  
+        });
       this.brushes = {};
 
       // Add and store a brush for each axis.

@@ -139,7 +139,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         $("#" + dataModule.binaryFieldNames[i] + "-colorButton")
           .button()
           .click(function(event) {
-            var toColor = event.target.parentNode.id.split("-")[0];
+            var toColor = "binary-" + event.target.parentNode.id.split("-")[0];
             if (that.model.get("colorBasedOn") == toColor) {
               that.model.set("colorBasedOn", "");
               return;

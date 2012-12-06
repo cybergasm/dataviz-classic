@@ -37,7 +37,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       this.model = options.placesModel;
       this.peopleModel = options.peopleModel;  
       
-      var that = this;  
+      var that = this; 
 
       function updateVisiblePlaces() {
         that.sites.style("display", function(d, i) {
@@ -83,10 +83,16 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
             return "grey";
           }
 
-          if (d[toColorOn] == 1) {
-            return that.model.get("binary-yes");
-          } else {
-            return that.model.get("binary-no");
+          var type = toColorOn.split("-")[0];
+          toColorOn = toColorOn.split("-")[1];
+          if (type == "binary") {
+            if (d[toColorOn] == 1) {
+              return that.model.get("binary-yes");
+            } else {
+              return that.model.get("binary-no");
+            }
+          } else if (type == "parallel") {
+            return that.model.get("parallelColorRange")(d[toColorOn]);
           }
         });
       }
