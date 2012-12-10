@@ -33,12 +33,12 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           // the 'no' option to the first. The refresh code forces the UI to 
           // update.
           $(yesId)
-            .prop({checked: value[1]});
+            .prop({checked: value[0]});
           $(yesId)
             .button("enable")
             .button("refresh");
           $(noId)
-            .prop({checked: value[0]});
+            .prop({checked: value[1]});
           $(noId)
             .button("enable")
             .button("refresh");
@@ -73,10 +73,10 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         var pastBinarySetting = that.model.get("binaryConfig").get(fieldName);
         if (fieldValue == "yes") {
         that.model.get("binaryConfig").set(fieldName, 
-          [pastBinarySetting[0],checkbox['checked']]);
+          [checkbox['checked'], pastBinarySetting[1]]);
         } else if (fieldValue == "no") {
         that.model.get("binaryConfig").set(fieldName, 
-          [checkbox['checked'],pastBinarySetting[1]]);
+          [pastBinarySetting[0], checkbox['checked']]);
         }
       }
 
