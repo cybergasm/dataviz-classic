@@ -42,7 +42,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         that.foreground.style("display", function(d, i) {
           // Check if the currently visible places have an entry for this data
           // point
-          return (dataModule.get(that.filteredDataId)[d['name']] ? null : 
+          return (dataModule.get(that.filteredDataId)[d['unique_id']] ? null : 
             "none");
         });
       }
@@ -68,45 +68,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
           });
       }
 
-      this.model.bind("change:colorBasedOn", resetColors);
-
-      function updateColorRange() {
-        // Update the range colors given new selected range.
-        var curColoring = that.model.get("colorBasedOn");
-        var type = curColoring.split("-")[0];
-        var name = curColoring.split("-")[1];
-
-        if (type == "parallel") {
-          var curRange = that.model.get("peopleParallelConfig").get(name);
-          // We have a selection in this range.
-          if (curRange.max < 1000000) {
-            var newRange = [];
-            var delta = (curRange.max - curRange.min) / that.rangeIncrements;
-
-            for (var i = 0; i <= that.rangeIncrements; i++) {
-              newRange.push(curRange.min + delta*i);
-            }
-            
-            var color = d3.scale.linear()
-              .domain(newRange)
-              .range(that.RdBu[that.rangeIncrements]);
-            
-            that.model.set("parallelColorRange", color);
-            that.model.trigger("change:colorBasedOn");
-
-            // Set color of paths*/
-            that.foreground.selectAll("path")
-              .forEach(function(d,i) {
-                // This is a little jank, but the alternative of .style("stroke")
-                // would not work
-                d.parentNode.style.stroke = "#e04242";
-              });
-         }
-        }
-      }
-
-      this.model.listenToPeopleParallelConfigChanges(updateColorRange);
-
       this.w = 1080 - this.m[1] - this.m[3];
       this.h = 300 - this.m[0] - this.m[2];
 
@@ -121,16 +82,14 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
     // Draws the parallel coordinates on screen
     render: function() {
-      $(this.el).append("<div id=\"" + this.svgId +"\">" + 
-        "You can click on a heading to color points based on that parameter." + 
-        "</div>");
+      $(this.el).append("<div id=\"" + this.svgId +"\"></div>");
 
       var svg = d3.select("#" + this.svgId).append("svg:svg")
         .attr("width", this.w + this.m[1] + this.m[3])
         .attr("height", this.h + this.m[0] + this.m[2])
-        .attr("id", "svg" + this.model.get("modelNum"))
+        .attr("id", "svg-people" + this.model.get("modelNum"))
         .append("svg:g")
-        .attr("id", "svgg" + this.model.get("modelNum"))
+        .attr("id", "svgg-people" + this.model.get("modelNum"))
         .attr("transform", "translate(" + this.m[3] + "," + this.m[0] + ")");
 
       // Save a reference
@@ -182,7 +141,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Add grey background lines for context.
       this.background = svg.append("svg:g")
         .attr("class", "background")
-        .attr("id", "background" + this.model.get("modelNum"))
+        .attr("id", "background-people" + this.model.get("modelNum"))
         .selectAll("path")
         .data(dataModule.peopleData)
         .enter().append("svg:path")
@@ -191,7 +150,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Add blue foreground lines for focus.
       this.foreground = svg.append("svg:g")
         .attr("class", "foreground")
-        .attr("id", "foreground" + this.model.get("modelNum"))
+        .attr("id", "foreground-people" + this.model.get("modelNum"))
         .selectAll("path")
         .data(dataModule.peopleData)
         .enter().append("svg:path")
@@ -210,7 +169,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Add an axis and title.
       this.g.append("svg:g")
         .attr("class", "axis")
-        .attr("id", "axis" + this.model.get("modelNum"))
+        .attr("id", "axis-people" + this.model.get("modelNum"))
         .each(function(d) { d3.select(this).call(axis.scale(that.y[d])); })
         .append("svg:text")
         .attr("text-anchor", "middle")
@@ -222,7 +181,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Add and store a brush for each axis.
       this.g.append("svg:g")
         .attr("class", "brush")
-        .attr("id", "brush" + this.model.get("modelNum"))
+        .attr("id", "brush-people" + this.model.get("modelNum"))
         .each(function(d) { 
           that.brushes[d] = d3.svg.brush().y(
               that.y[d]).on("brush", brush)
@@ -230,7 +189,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         })
         .selectAll("rect")
         .attr("x", -8)
-        .attr("id", "rect" + this.model.get("modelNum"))
+        .attr("id", "rect-people" + this.model.get("modelNum"))
         .attr("width", 16);
     }
 
