@@ -66,6 +66,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'datatable'],
       // Table code based on sample from: http://jsfiddle.net/7WQjr/
       var table = d3.select("#" + this.tableId)
         .append("table")
+        .attr("style", "height:850px")
         .attr("id", this.tableId + "-table");
 
       var thead = table.append("thead"),

@@ -42,7 +42,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         }
       }
 
-//      this.model.listenToPeopleCheckboxChanges(updateConfigUI);
+      this.model.listenToPeopleCheckboxChanges(updateConfigUI);
 
       this.render()
     },
@@ -94,7 +94,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
 
         // For every label append a checkbox before the label
         for (var j = 0; j < curValues.length; j++) {
-          console.log(curValues[j]);
           curDiv.insert("input", "#" + curValues[j] + "-label")
             .attr("type", "checkbox")
             .attr("name", curValues[i])

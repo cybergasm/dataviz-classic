@@ -4,13 +4,13 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
   'checkboxes_widget', 'map_widget', 'data_module', 'map_config_model', 
   'data_table_widget', 'export_widget', 'map_comparison_model', 
   'people_binary_boxes_widget', 'people_list', 'people_config_model',
-  'people_checkboxes_widget'], 
+  'people_checkboxes_widget', 'people_parallel_coord_widget'], 
     function(Backbone, $, parallelCoordWidgetFactory, binaryBoxesWidgetFactory, 
       checkboxesWidgetFactory, mapWidgetFactory, dataModule, 
       mapConfigModelFactory, dataTableWidgetFactory, exportWidgetFactory,
       mapComparisonModelEditor, peopleBinaryBoxesWidgetFactory, 
       peopleListFactory, peopleConfigModelFactory, 
-      peopleCheckboxesWidgetFactory) {
+      peopleCheckboxesWidgetFactory, peopleParallelCoordWidgetFactory) {
   
     var dialogView = Backbone.View.extend( {
     
@@ -24,6 +24,7 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
     viewsId: "dataViews",
     viewsContentList: "dataViewsList",
     configurationCollectionEntry: null,
+    peopleTabId: "peopleTab",
 
     events: {},
 
@@ -126,37 +127,44 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
       this.parallelCoordWidget.render();
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.parallelCoordWidget.getId() + "\">" +
-          "Real-valued parameters</a></li>");
+          "Place Measures</a></li>");
 
       this.binaryBoxesWidget = binaryBoxesWidgetFactory("#" + this.tabsId, 
         this.model);
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.binaryBoxesWidget.getId() + "\">" +
-          "Binary Options Toggle</a></li>");
+          "Place Options</a></li>");
       
       this.checkboxesWidget = checkboxesWidgetFactory("#" + this.tabsId, 
         this.model);
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.checkboxesWidget.getId() + "\">" +
-          "Toggle Paramters</a></li>");
+          "Place Toggles</a></li>");
+
+      this.peopleParallelCoordWidget = peopleParallelCoordWidgetFactory("#" + 
+        this.tabsId, this.peopleModel);
+      this.peopleParallelCoordWidget.render();
+      $("#" + this.tabsContentList, this.el)
+        .append("<li><a href=\"#" + this.peopleParallelCoordWidget.getId() + 
+          "\">" + "People Measures</a></li>");
       
       this.peopleBinaryBoxesWidget = peopleBinaryBoxesWidgetFactory("#" + 
         this.tabsId, this.peopleModel);
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.peopleBinaryBoxesWidget.getId() + 
-          "\">" + "People Toggle</a></li>");
+          "\">" + "People Toggles</a></li>");
+
+      this.peopleCheckboxesWidget = peopleCheckboxesWidgetFactory("#" + 
+        this.tabsId, this.peopleModel);
+      $("#" + this.tabsContentList, this.el)
+        .append("<li><a href=\"#" + this.peopleCheckboxesWidget.getId() + "\">" 
+          + "People Options</a></li>"); 
 
       this.exportWidget = exportWidgetFactory("#" + this.tabsId, this.model,
         this.peopleModel);
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.exportWidget.getId() + "\">" +
           "Export</a></li>");
-
-      this.peopleCheckboxesWidget = peopleCheckboxesWidgetFactory("#" + 
-        this.tabsId, this.peopleModel);
-      $("#" + this.tabsContentList, this.el)
-        .append("<li><a href=\"#" + this.peopleCheckboxesWidget.getId() + "\">" 
-          + "People Checkboxes</a></li>");  
     },
 
     // Renders the different data displays into a tab view on top of the 
@@ -166,18 +174,18 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         this.peopleModel);
       $("#" + this.dataViewsList, this.el)
         .append("<li><a href=\"#" + this.mapWidget.getId() + "\">" +
-          "Countries Map</a></li>");
-
-      this.peopleList = peopleListFactory("#" + this.viewsId, this.peopleModel);
-      $("#" + this.dataViewsList, this.el) 
-        .append("<li><a href=\"#" + this.peopleList.getId() + "\">" +
-          "People</a></li>");;
+          "Map View</a></li>");
 
       this.dataTableWidget = dataTableWidgetFactory("#" + this.viewsId,
         this.model);
       $("#" + this.dataViewsList, this.el)
         .append("<li><a href=\"#" + this.dataTableWidget.getId() + "\">" +
           "Table of Cities</a></li>");
+
+      this.peopleList = peopleListFactory("#" + this.viewsId, this.peopleModel);
+      $("#" + this.dataViewsList, this.el) 
+        .append("<li><a href=\"#" + this.peopleList.getId() + "\">" +
+          "Table of People</a></li>");
     },
 
     // Adds a dialog div and configures it to be hidden.

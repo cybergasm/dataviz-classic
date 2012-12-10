@@ -127,7 +127,7 @@ svg {
   background: #003366;
   border-bottom: 1px solid #FFFFFF;
   cursor: pointer;
-  }
+}
 
 .peopleCheckboxAccordionContent { 
   width: 800px;
@@ -136,7 +136,7 @@ svg {
   float: left;
   background: #95B1CE;
   display: none;
-  }
+}
 
 /*#main {
   border:2px solid gray;

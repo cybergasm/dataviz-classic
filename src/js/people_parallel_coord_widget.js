@@ -1,11 +1,11 @@
 // This module creates a widget that creates a parallel coordinate selector over
-// the polis data. 
+// the people data. 
 define(['backbone', 'jquery-ui', 'd3', 'data_module'], 
     function(Backbone, $, d3, dataModule) {
-  var parallelCoordWidget = Backbone.View.extend( {
+  var peopleParallelCoordWidget = Backbone.View.extend( {
 
-    svgId: "parallel",
-    filteredDataId: "visiblePlaces",
+    svgId: "peopleParallel",
+    filteredDataId: "visiblePeople",
 
     // Used in calculating dimensions
     m: [30, 10, 10, 10],
@@ -17,6 +17,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     // https://github.com/mbostock/d3/blob/master/lib/colorbrewer/colorbrewer.js
   //  RdBu:{3:["rgb(239,138,98)","rgb(247,247,247)","rgb(103,169,207)"],4:["rgb(202,0,32)","rgb(244,165,130)","rgb(146,197,222)","rgb(5,113,176)"],5:["rgb(202,0,32)","rgb(244,165,130)","rgb(247,247,247)","rgb(146,197,222)","rgb(5,113,176)"]},
     RdBu:{3:["rgb(67, 162, 202)","rgb(168, 221, 181)","rgb(224, 243, 219)"],4:["rgb(43, 140, 190)","rgb(123, 204, 196)","rgb(186, 228, 188)","rgb(240, 249, 232)"],5:["rgb(8, 104, 172)","rgb(67, 162, 202)","rgb(123, 204, 196)","rgb(186, 228, 188)","rgb(240, 249, 232)"]},
+
 
     //,6:["rgb(178,24,43)","rgb(239,138,98)","rgb(253,219,199)","rgb(209,229,240)","rgb(103,169,207)","rgb(33,102,172)"],7:["rgb(178,24,43)","rgb(239,138,98)","rgb(253,219,199)","rgb(247,247,247)","rgb(209,229,240)","rgb(103,169,207)","rgb(33,102,172)"],8:["rgb(178,24,43)","rgb(214,96,77)","rgb(244,165,130)","rgb(253,219,199)","rgb(209,229,240)","rgb(146,197,222)","rgb(67,147,195)","rgb(33,102,172)"],9:["rgb(178,24,43)","rgb(214,96,77)","rgb(244,165,130)","rgb(253,219,199)","rgb(247,247,247)","rgb(209,229,240)","rgb(146,197,222)","rgb(67,147,195)","rgb(33,102,172)"],10:["rgb(103,0,31)","rgb(178,24,43)","rgb(214,96,77)","rgb(244,165,130)","rgb(253,219,199)","rgb(209,229,240)","rgb(146,197,222)","rgb(67,147,195)","rgb(33,102,172)","rgb(5,48,97)"],11:["rgb(103,0,31)","rgb(178,24,43)","rgb(214,96,77)","rgb(244,165,130)","rgb(253,219,199)","rgb(247,247,247)","rgb(209,229,240)","rgb(146,197,222)","rgb(67,147,195)","rgb(33,102,172)","rgb(5,48,97)"]},
 
@@ -76,7 +77,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         var name = curColoring.split("-")[1];
 
         if (type == "parallel") {
-          var curRange = that.model.get("parallelConfig").get(name);
+          var curRange = that.model.get("peopleParallelConfig").get(name);
           // We have a selection in this range.
           if (curRange.max < 1000000) {
             var newRange = [];
@@ -93,19 +94,18 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
             that.model.set("parallelColorRange", color);
             that.model.trigger("change:colorBasedOn");
 
-            // Set color of paths
+            // Set color of paths*/
             that.foreground.selectAll("path")
               .forEach(function(d,i) {
                 // This is a little jank, but the alternative of .style("stroke")
                 // would not work
-                d.parentNode.style.stroke = color(
-                  d.parentNode.__data__[name]);
+                d.parentNode.style.stroke = "#e04242";
               });
-          }
+         }
         }
       }
 
-      this.model.listenToMapParallelConfigChanges(updateColorRange);
+      this.model.listenToPeopleParallelConfigChanges(updateColorRange);
 
       this.w = 1080 - this.m[1] - this.m[3];
       this.h = 300 - this.m[0] - this.m[2];
@@ -136,8 +136,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
       // Save a reference
       var that = this;
 
-      this.dimensions = dataModule.parallelFieldNames.filter(function(d) {
-        that.y[d] = d3.scale.linear().domain(d3.extent(dataModule.polisData, 
+      this.dimensions = dataModule.peopleParallelFieldNames.filter(function(d) {
+        that.y[d] = d3.scale.linear().domain(d3.extent(dataModule.peopleData, 
           function(p) {
             return +p[d]; 
           }))
@@ -172,7 +172,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         });
         for(var i = 0; i < actives.length; i++) {
           var currentField = actives[i];
-          that.model.get("parallelConfig").set(currentField , {
+          that.model.get("peopleParallelConfig").set(currentField , {
             min:extents[i][0],
             max:extents[i][1]
           })
@@ -184,7 +184,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .attr("class", "background")
         .attr("id", "background" + this.model.get("modelNum"))
         .selectAll("path")
-        .data(dataModule.polisData)
+        .data(dataModule.peopleData)
         .enter().append("svg:path")
         .attr("d", path);
 
@@ -193,7 +193,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .attr("class", "foreground")
         .attr("id", "foreground" + this.model.get("modelNum"))
         .selectAll("path")
-        .data(dataModule.polisData)
+        .data(dataModule.peopleData)
         .enter().append("svg:path")
         .attr("d", path)
         .style("stroke", "#e04242");
@@ -215,54 +215,8 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         .append("svg:text")
         .attr("text-anchor", "middle")
         .attr("y", -9)
-        .text(String)
-        .on("click", function(clickedElement) {
-          // Check if we are resetting
-          if (("parallel-" + clickedElement) == 
-              that.model.get("colorBasedOn")) {
-            // Set color of paths
-            that.foreground.selectAll("path")
-              .forEach(function(d,i) {
-                // This is a little jank, but the alternative of .style("stroke")
-                // would not work
-                d.parentNode.style.stroke = "#e04242";
-            });
-            that.model.set("colorBasedOn", "");
-            return;
-          }
-
-          // Discretize our continuous range so we can get color
-          var range = that.y[clickedElement].domain();
-
-          var curRange = that.model.get("parallelConfig").get(clickedElement);
-          // We have a selection in this range.
-          if (curRange.max < 1000000) {
-            range[0] = curRange.min;
-            range[1] = curRange.max;
-          }
-
-          // Go along the range and create new range at each discretization
-          // point
-          var delta = (range[1] - range[0]) / that.rangeIncrements;
-          var newRange = [];
-          for (var i = 0; i <= that.rangeIncrements; i++) {
-            newRange.push(range[0] + delta * i);
-          }
-          var color = d3.scale.linear()
-            .domain(newRange)
-            .range(that.RdBu[that.rangeIncrements]);
-          
-          // Set color of paths
-          that.foreground.selectAll("path")
-            .forEach(function(d,i) {
-              // This is a little jank, but the alternative of .style("stroke")
-              // would not work
-              d.parentNode.style.stroke = color(
-                d.parentNode.__data__[clickedElement]);
-            });
-          that.model.set("parallelColorRange", color);
-          that.model.set("colorBasedOn", "parallel-" + clickedElement);  
-        });
+        .text(String);
+        
       this.brushes = {};
 
       // Add and store a brush for each axis.
@@ -283,6 +237,6 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
   });
 
   return function(parent_, model_) {
-    return new parallelCoordWidget({parentElem:parent_, model:model_});
+    return new peopleParallelCoordWidget({parentElem:parent_, model:model_});
   }
 });

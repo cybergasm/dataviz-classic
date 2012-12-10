@@ -50,8 +50,8 @@ define(['backbone', 'data_module'], function(Backbone, dataModule) {
       this.set("parallelConfig", new parallelConfigModel());
       this.set("checkboxConfig", new checkboxConfigModel());
       this.set("mapStateString", "");
-      this.set("binary-yes", "#76BBFC");
-      this.set("binary-no", "#88CCA0");
+      this.set("binary-yes", "#CA0020");
+      this.set("binary-no", "#0571B0");
       this.set("colorBasedOn", "");
     },
 

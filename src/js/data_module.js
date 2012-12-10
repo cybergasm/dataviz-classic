@@ -131,6 +131,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
 
         var fieldsToFix = ["Work_Living_Places", "Birthplace"];
         for(var n = 0; n < fieldsToFix.length; n++){
+          var possibleFieldNames = "";
           var fieldName = fieldsToFix[n];
           var numberFieldName = fieldName + "_Code";
           for(var i = 0; i < that.peopleData.length; i++) {
@@ -142,6 +143,9 @@ define(['backbone', 'd3'], function (Backbone, d3) {
               if(placeCodeToName[parseInt(currentCode)] != undefined) {
                 var name = placeCodeToName[parseInt(currentCode)]['name'];
                 placeNamesString += (name + ",");
+                if(possibleFieldNames.indexOf(name) == -1) {
+                  possibleFieldNames += name + ",";
+                }
               }
             }
             that.peopleData[i][fieldName] = placeNamesString;
@@ -268,7 +272,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           }
         }
 
-        /*// Check the checkbox values by going through every name and category
+        // Check the checkbox values by going through every name and category
         // and checking if it is checked by user and if it is in the data for
         // this person. If any of the associated values with the person are 
         // checked we return true.        
@@ -295,7 +299,7 @@ define(['backbone', 'd3'], function (Backbone, d3) {
           if (!containsCheckBox) {
             return false;
           }
-        }*/
+        }
 
         // Check era.
         var curEra = parseInt(toCheck["Era"]);
