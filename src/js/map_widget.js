@@ -21,6 +21,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
     yearSelectorDescriptionClass: "yearSelectorDescription",
     yearSelectorDescriptionId: "yearSelectorDescription",
     yearSelectorContainerId: "yearSelectorContainer",
+    peopleLegendId: "peopleLegend",
     zoomMin:2000,
     zoomMax:15000,
     initOrigin:[22.8, 38.6],
@@ -64,6 +65,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       this.yearSelectorId += this.model.get("modelNum");
       this.yearSelectorDescriptionId += this.model.get("modelNum");
       this.yearSelectorContainerId += this.model.get("modelNum");
+      this.peopleLegendId += this.model.get("modelNum");
 
       // Make ourselvs a listener to when the visible places change.
       dataModule.bind("change:" + this.filteredPlacesDataId, 
@@ -124,6 +126,12 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         .append("<input type=\"checkbox\" id=\"" + 
           this.togglePeopleId + "\" />" + "<label for=\"" + 
           this.togglePeopleId + "\">Include People Data on Map</label>");
+      $("#" + this.mapId, this.el)
+        .append("<span id=\"" + this.peopleLegendId + "\">" + 
+          "  Circle radius proportional to number of people that have lived " + 
+          "city.</span>");
+      $("#" + this.peopleLegendId, this.el)
+        .hide();
 
       $("#" + this.togglePeopleId, this.el)
         .button()
@@ -131,6 +139,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
           that.withPeople = !that.withPeople;
           that.updatePeopleDataOnMap();        
           that.setYearSelectorVisibility();
+          that.setLegend();
         });
 
       // Add the map and zooming panel
@@ -208,6 +217,14 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         $("#" + this.yearSelectorContainerId, this.el).show();
       } else {
         $("#" + this.yearSelectorContainerId, this.el).hide();
+      }
+    },
+
+    setLegend: function() {
+      if (this.withPeople) {
+        $("#" + this.peopleLegendId, this.el).show();
+      } else {
+        $("#" + this.peopleLegendId, this.el).hide();
       }
     },
 
