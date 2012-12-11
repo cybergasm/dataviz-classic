@@ -133,13 +133,13 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         this.model);
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.binaryBoxesWidget.getId() + "\">" +
-          "Place Options</a></li>");
+          "Place Toggles</a></li>");
       
       this.checkboxesWidget = checkboxesWidgetFactory("#" + this.tabsId, 
         this.model);
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.checkboxesWidget.getId() + "\">" +
-          "Place Toggles</a></li>");
+          "Place Constitution</a></li>");
 
       this.peopleParallelCoordWidget = peopleParallelCoordWidgetFactory("#" + 
         this.tabsId, this.peopleModel);
@@ -154,11 +154,11 @@ define(['backbone', 'jquery-ui', 'parallel_coord_widget', 'binary_boxes_widget',
         .append("<li><a href=\"#" + this.peopleBinaryBoxesWidget.getId() + 
           "\">" + "People Toggles</a></li>");
 
-      this.peopleCheckboxesWidget = peopleCheckboxesWidgetFactory("#" + 
+/*      this.peopleCheckboxesWidget = peopleCheckboxesWidgetFactory("#" + 
         this.tabsId, this.peopleModel);
       $("#" + this.tabsContentList, this.el)
         .append("<li><a href=\"#" + this.peopleCheckboxesWidget.getId() + "\">" 
-          + "People Options</a></li>"); 
+          + "People Options</a></li>"); */
 
       this.exportWidget = exportWidgetFactory("#" + this.tabsId, this.model,
         this.peopleModel);

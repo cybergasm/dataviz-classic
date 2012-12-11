@@ -297,12 +297,12 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         .attr("id", "mapsvgid" + this.model.get("modelNum"))
         .attr("transform", "translate(2,3)");
 
-      embossed = map.selectAll("path.countries")
+      this.embossed = map.selectAll("path.countries")
         .data(dataModule.mapCountries.features)
         .enter().append("svg:path")
         .attr("d", this.clip)
         .attr("class", "countries")
-        .style("fill", "#E8E8E8")
+        .style("fill", "#CCCCCC")
         .style("stroke", "#C4C2C3")
         .style("stroke-width", 4);
 
@@ -319,7 +319,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
       this.sites.append("svg:circle")      
         .attr('r', 7)
         .attr("class", "sites")
-        .style("fill", "grey")
+        .style("fill", "#E04242")
         .style("stroke", "grey")
         .style("opacity", 0)
         .transition()
@@ -375,7 +375,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
           function(d) { 
             return "translate(" + that.projection([d.xcoord, d.ycoord]) + ")"; 
           });
-      embossed
+      this.embossed
         .transition()
         .delay(100)
         .duration(500)
