@@ -333,7 +333,11 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
         title: function() {
           var info = "<span>";
           info += "<p>Name: " + this.__data__["name"];
-            
+          if (that.withPeople) {
+            info += "<p>Number of people: " + 
+              _.size(that.dataModule.residencyMap[this.__data__['polis_id']]) 
+              + "</p>";
+          }
           info += "</span>"
           return info;
         }
