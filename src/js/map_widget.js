@@ -277,6 +277,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module', 'tipsy'],
 
       var rankRamp = d3.scale.linear().domain([0,.005]).range([1,10]).clamp(true);
 
+      // Basic map setup taken from example by Mike Bostock
       this.projection = d3.geo.azimuthal()
         .scale(this.initZoom)
         .origin(this.initOrigin)

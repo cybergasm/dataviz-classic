@@ -121,6 +121,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
     },
 
     // Draws the parallel coordinates on screen
+    // Basic parallel coordiante code from example by Mike Bostock
     render: function() {
       $(this.el).append("<div id=\"" + this.svgId +"\">" + 
         "You can click on a heading to color points based on that parameter." + 

@@ -138,6 +138,7 @@ define(['backbone', 'jquery-ui', 'd3', 'data_module'],
         }
       }
 
+      // Basic parallel coordiante code from example by Mike Bostock
       // Add grey background lines for context.
       this.background = svg.append("svg:g")
         .attr("class", "background")
